@@ -1,0 +1,3076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050b1c">
+<title>电路侦探社——中考电学闯关</title>
+<style>
+:root{
+  --bg:#050b1c; --bg2:#0a1530; --card:#0d1b3a; --card2:#0a1430;
+  --line:rgba(56,189,248,.28); --line2:rgba(56,189,248,.55);
+  --cy:#22d3ee; --cy2:#0891b2; --blue:#38bdf8; --pur:#a855f7;
+  --pink:#f472b6; --grn:#22c55e; --red:#ef4444; --yel:#facc15;
+  --tx:#dbeafe; --tx2:#93c5fd; --tx3:#64748b;
+  --r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  min-height:100vh; color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(34,211,238,.14), transparent 42%),
+    radial-gradient(circle at 88% 92%, rgba(168,85,247,.14), transparent 42%),
+    linear-gradient(rgba(56,189,248,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.045) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, #0a1530, #050b1c 75%);
+  background-size:auto,auto,42px 42px,42px 42px,auto;
+  background-attachment:fixed;
+  padding-bottom:40px;
+  overflow-x:hidden;
+}
+#app{max-width:880px;margin:0 auto;padding:0 12px;}
+h1,h2,h3,h4{margin:0 0 10px;}
+button{font-family:inherit;}
+a{color:var(--cy);}
+
+/* ---------- 通用组件 ---------- */
+.card{
+  background:linear-gradient(160deg, rgba(15,32,66,.94), rgba(8,17,40,.96));
+  border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:0 8px 30px rgba(2,8,23,.6), inset 0 1px 0 rgba(255,255,255,.05);
+  padding:16px; margin-bottom:14px;
+}
+.card-title{font-size:16px;font-weight:800;color:#e0f2fe;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card-title .dot{width:8px;height:8px;border-radius:50%;background:var(--cy);box-shadow:0 0 10px var(--cy);}
+.muted{color:var(--tx2);font-size:13px;line-height:1.7;}
+.tiny{font-size:12px;color:var(--tx3);}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 18px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;
+  border:1px solid var(--line2); color:#a5f3fc; background:linear-gradient(180deg,rgba(34,211,238,.16),rgba(34,211,238,.04));
+  transition:.16s; user-select:none; line-height:1.2;
+}
+.btn:hover:not(:disabled){box-shadow:0 0 18px rgba(34,211,238,.45);transform:translateY(-1px);}
+.btn:active:not(:disabled){transform:translateY(0) scale(.98);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.primary{background:linear-gradient(180deg,#22d3ee,#0369a1);color:#01131f;border-color:#67e8f9;text-shadow:0 1px 0 rgba(255,255,255,.25);}
+.btn.primary:hover:not(:disabled){box-shadow:0 0 24px rgba(34,211,238,.7);}
+.btn.purple{background:linear-gradient(180deg,rgba(168,85,247,.28),rgba(168,85,247,.08));color:#e9d5ff;border-color:rgba(168,85,247,.6);}
+.btn.pink{background:linear-gradient(180deg,rgba(244,114,182,.25),rgba(244,114,182,.07));color:#fbcfe8;border-color:rgba(244,114,182,.6);}
+.btn.ghost{background:rgba(15,32,66,.6);color:var(--tx2);border-color:var(--line);}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:9px;}
+.btn.full{width:100%;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+.input{
+  width:100%;padding:11px 13px;border-radius:11px;font-size:15px;
+  background:rgba(3,10,26,.85);border:1px solid var(--line);color:#e0f2fe;outline:none;
+  transition:.15s;
+}
+.input:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(34,211,238,.15);}
+.input::placeholder{color:#475569;}
+select.input{cursor:pointer;}
+label.lb{display:block;font-size:13px;color:var(--tx2);margin:0 0 6px;font-weight:600;}
+
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.7;border:1px solid transparent;}
+.tag.easy{background:rgba(34,197,94,.16);color:#86efac;border-color:rgba(34,197,94,.4);}
+.tag.mid{background:rgba(250,204,21,.16);color:#fde047;border-color:rgba(250,204,21,.4);}
+.tag.hard{background:rgba(239,68,68,.16);color:#fca5a5;border-color:rgba(239,68,68,.45);}
+.tag.k{background:rgba(56,189,248,.14);color:#7dd3fc;border-color:rgba(56,189,248,.35);}
+.tag.type{background:rgba(168,85,247,.16);color:#d8b4fe;border-color:rgba(168,85,247,.4);}
+
+/* ---------- 顶部栏 ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px 4px 10px;position:sticky;top:0;z-index:50;
+  background:linear-gradient(180deg,rgba(5,11,28,.97) 60%,rgba(5,11,28,0));
+  backdrop-filter:blur(6px);
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:17px;letter-spacing:.5px;}
+.brand .logo{
+  width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:17px;
+  background:linear-gradient(135deg,#0891b2,#7c3aed);box-shadow:0 0 16px rgba(34,211,238,.6);
+}
+.brand small{display:block;font-size:10px;font-weight:500;color:var(--tx2);letter-spacing:2px;}
+.hud{display:flex;gap:8px;align-items:center;font-size:12px;}
+.hud .chip{
+  background:rgba(10,21,48,.9);border:1px solid var(--line);border-radius:999px;
+  padding:5px 11px;white-space:nowrap;font-weight:700;color:#a5f3fc;
+}
+.hud .chip b{color:#fff;}
+
+/* ---------- 首页 ---------- */
+.hero{text-align:center;padding:22px 14px 18px;}
+.hero h1{
+  font-size:27px;line-height:1.3;font-weight:900;letter-spacing:1px;
+  background:linear-gradient(90deg,#67e8f9,#a78bfa,#f472b6);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 34px rgba(103,232,249,.25);
+}
+.hero sub{display:block;margin-top:8px;font-size:13px;color:var(--tx2);letter-spacing:.5px;font-weight:500;}
+.avatar-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.avatar-pick{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;cursor:pointer;
+  background:rgba(10,21,48,.9);border:1px solid var(--line);transition:.15s;
+}
+.avatar-pick:hover{border-color:var(--line2);transform:translateY(-2px);}
+.avatar-pick.on{border-color:var(--cy);box-shadow:0 0 14px rgba(34,211,238,.55);background:rgba(34,211,238,.15);}
+
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:420px){.mode-grid{grid-template-columns:1fr;}}
+.mode-btn{
+  text-align:left;padding:14px;border-radius:14px;cursor:pointer;transition:.16s;
+  background:linear-gradient(150deg,rgba(17,36,72,.95),rgba(8,17,40,.95));
+  border:1px solid var(--line);color:var(--tx);
+}
+.mode-btn:hover{border-color:var(--cy);box-shadow:0 0 20px rgba(34,211,238,.28);transform:translateY(-2px);}
+.mode-btn .mt{font-weight:800;font-size:15px;margin-bottom:4px;color:#e0f2fe;}
+.mode-btn .md{font-size:12px;color:var(--tx2);line-height:1.6;}
+
+/* ---------- 关卡列表 ---------- */
+.level-item{
+  display:flex;align-items:center;gap:12px;padding:13px;border-radius:14px;cursor:pointer;
+  background:linear-gradient(140deg,rgba(17,36,72,.9),rgba(8,17,40,.9));
+  border:1px solid var(--line);transition:.16s;margin-bottom:10px;
+}
+.level-item:hover{border-color:var(--cy);box-shadow:0 0 18px rgba(34,211,238,.25);transform:translateX(3px);}
+.level-item .num{
+  width:42px;height:42px;flex:0 0 42px;border-radius:12px;display:grid;place-items:center;
+  font-weight:900;font-size:17px;color:#03121f;
+  background:linear-gradient(135deg,#22d3ee,#0ea5e9);box-shadow:0 0 14px rgba(34,211,238,.5);
+}
+.level-item .li-t{font-weight:800;font-size:15px;color:#e0f2fe;margin-bottom:3px;}
+.level-item .li-d{font-size:12px;color:var(--tx2);}
+.level-item .li-r{margin-left:auto;text-align:right;font-size:11px;color:var(--tx3);flex:0 0 auto;}
+.level-item .li-r b{display:block;font-size:16px;color:#fde047;}
+
+/* ---------- 答题 ---------- */
+.qhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.qstem{font-size:16px;line-height:1.78;color:#f0f9ff;font-weight:600;word-break:break-word;}
+.figure-box{margin:12px 0;padding:8px;border-radius:14px;background:rgba(3,10,26,.9);border:1px solid var(--line);text-align:center;}
+.figure-box svg{max-width:100%;height:auto;display:block;margin:0 auto;}
+
+.option{
+  display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(10,21,48,.75);cursor:pointer;
+  transition:.14s;margin-bottom:9px;font-size:14.5px;line-height:1.65;
+}
+.option:hover{border-color:var(--line2);background:rgba(15,35,72,.9);}
+.option .k{
+  flex:0 0 24px;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+  font-weight:800;font-size:13px;background:rgba(56,189,248,.16);color:#7dd3fc;border:1px solid var(--line);
+}
+.option.sel{border-color:var(--cy);background:rgba(34,211,238,.15);box-shadow:0 0 16px rgba(34,211,238,.32);}
+.option.sel .k{background:var(--cy);color:#03121f;border-color:var(--cy);}
+.option.ok{border-color:var(--grn);background:rgba(34,197,94,.14);box-shadow:0 0 16px rgba(34,197,94,.3);}
+.option.ok .k{background:var(--grn);color:#04170a;border-color:var(--grn);}
+.option.bad{border-color:var(--red);background:rgba(239,68,68,.13);}
+.option.bad .k{background:var(--red);color:#fff;border-color:var(--red);}
+.option.dis{cursor:default;}
+
+.fill-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;}
+.fill-row .input{flex:1 1 200px;}
+.unit-inline{padding:11px 14px;border-radius:11px;background:rgba(3,10,26,.9);border:1px solid var(--line);color:#7dd3fc;font-weight:700;white-space:nowrap;}
+
+.progress{height:7px;border-radius:999px;background:rgba(3,10,26,.9);overflow:hidden;border:1px solid var(--line);margin-bottom:12px;}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#a855f7);transition:width .3s;box-shadow:0 0 12px rgba(34,211,238,.7);}
+
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--tx2);}
+
+/* ---------- 解析 ---------- */
+.result-box{margin-top:14px;border-radius:14px;padding:14px;border:1px solid;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.result-box.ok{border-color:rgba(34,197,94,.5);background:linear-gradient(160deg,rgba(34,197,94,.13),rgba(8,17,40,.9));}
+.result-box.bad{border-color:rgba(239,68,68,.5);background:linear-gradient(160deg,rgba(239,68,68,.12),rgba(8,17,40,.9));}
+.rb-head{display:flex;align-items:center;gap:9px;font-weight:900;font-size:16px;margin-bottom:10px;}
+.rb-head .ico{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;}
+.result-box.ok .ico{background:rgba(34,197,94,.22);color:#86efac;}
+.result-box.bad .ico{background:rgba(239,68,68,.22);color:#fca5a5;}
+.ans-line{padding:9px 12px;border-radius:10px;background:rgba(3,10,26,.75);border:1px solid var(--line);margin-bottom:10px;font-size:14px;}
+.ans-line b{color:#fde047;}
+.sec{margin-bottom:10px;}
+.sec .sh{font-size:12px;font-weight:800;color:#7dd3fc;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.sec .sb{font-size:13.5px;line-height:1.82;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;}
+.sec.formula .sb{
+  font-family:"Cambria Math",Georgia,serif;color:#67e8f9;font-size:14.5px;
+  background:rgba(3,10,26,.8);padding:9px 12px;border-radius:10px;border-left:3px solid var(--cy);
+}
+.sec.pit .sb{color:#fdba74;}
+.gain-tip{font-size:12px;color:#86efac;font-weight:700;margin-top:4px;}
+
+/* ---------- 徽章 ---------- */
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;}
+.badge{text-align:center;padding:12px 6px;border-radius:14px;background:rgba(10,21,48,.8);border:1px solid var(--line);position:relative;transition:.16s;}
+.badge.on{border-color:rgba(250,204,21,.6);background:linear-gradient(160deg,rgba(250,204,21,.13),rgba(10,21,48,.9));box-shadow:0 0 18px rgba(250,204,21,.22);}
+.badge.off{opacity:.42;filter:grayscale(1);}
+.badge .bi{font-size:27px;line-height:1.2;}
+.badge .bn{font-size:11.5px;font-weight:800;margin-top:5px;color:#e0f2fe;line-height:1.4;}
+.badge .bd{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.4;}
+
+/* ---------- 排行榜 ---------- */
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.tab{padding:7px 14px;border-radius:999px;background:rgba(10,21,48,.85);border:1px solid var(--line);color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+.tab:hover{border-color:var(--line2);color:#a5f3fc;}
+.tab.on{background:linear-gradient(180deg,rgba(34,211,238,.24),rgba(34,211,238,.08));border-color:var(--cy);color:#a5f3fc;box-shadow:0 0 14px rgba(34,211,238,.3);}
+.rank-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;border:1px solid transparent;margin-bottom:7px;background:rgba(10,21,48,.6);}
+.rank-row.me{border-color:var(--cy);background:rgba(34,211,238,.1);box-shadow:0 0 16px rgba(34,211,238,.18);}
+.rank-no{flex:0 0 30px;text-align:center;font-weight:900;font-size:15px;color:var(--tx2);}
+.rank-no.g1{color:#fde047;} .rank-no.g2{color:#e2e8f0;} .rank-no.g3{color:#fdba74;}
+.rank-av{flex:0 0 38px;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:19px;background:rgba(3,10,26,.9);border:1px solid var(--line);}
+.rank-info{flex:1;min-width:0;}
+.rank-info .rn{font-weight:800;font-size:14px;color:#e0f2fe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-info .rd{font-size:11px;color:var(--tx3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-sc{text-align:right;flex:0 0 auto;}
+.rank-sc b{display:block;font-size:15px;color:#fde047;font-weight:900;}
+.rank-sc span{font-size:10px;color:var(--tx3);}
+
+/* ---------- 错题本 ---------- */
+.wrong-item{padding:11px 13px;border-radius:12px;background:rgba(10,21,48,.7);border:1px solid var(--line);margin-bottom:9px;}
+.wrong-item .wi-t{font-size:13.5px;line-height:1.65;color:#cbd5e1;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.wrong-item .wi-m{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:11px;}
+
+/* ---------- 弹窗 / Toast ---------- */
+.modal-mask{position:fixed;inset:0;background:rgba(2,6,18,.82);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:400;animation:fadeUp .18s;}
+.modal{width:100%;max-width:460px;max-height:86vh;overflow:auto;border-radius:18px;padding:18px;background:linear-gradient(160deg,#0f2148,#08112a);border:1px solid var(--line2);box-shadow:0 20px 60px rgba(0,0,0,.7);}
+.modal h3{font-size:17px;color:#e0f2fe;}
+.modal textarea.input{min-height:90px;resize:vertical;line-height:1.6;}
+
+.toast{
+  position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+  background:rgba(8,20,44,.97);border:1px solid var(--cy);color:#a5f3fc;
+  padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:700;z-index:600;
+  opacity:0;pointer-events:none;transition:.25s;box-shadow:0 0 24px rgba(34,211,238,.45);max-width:88vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+
+.badge-pop{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);
+  z-index:700;text-align:center;padding:26px 34px;border-radius:22px;
+  background:linear-gradient(160deg,#1e293b,#0b1120);border:2px solid rgba(250,204,21,.7);
+  box-shadow:0 0 60px rgba(250,204,21,.45);opacity:0;transition:.32s cubic-bezier(.34,1.56,.64,1);
+}
+.badge-pop.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.badge-pop .bp-i{font-size:56px;line-height:1;filter:drop-shadow(0 0 18px rgba(250,204,21,.9));}
+.badge-pop .bp-t{font-size:13px;color:#fde047;letter-spacing:3px;margin-top:10px;font-weight:800;}
+.badge-pop .bp-n{font-size:20px;font-weight:900;color:#fff;margin-top:4px;}
+.badge-pop .bp-d{font-size:12px;color:var(--tx2);margin-top:6px;}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+table.tbl th,table.tbl td{padding:8px 9px;border-bottom:1px solid rgba(56,189,248,.16);text-align:left;}
+table.tbl th{color:#7dd3fc;font-weight:800;font-size:12px;}
+table.tbl tr:hover td{background:rgba(34,211,238,.05);}
+.hl{color:#fde047;font-weight:800;}
+.code{font-family:Consolas,Monaco,monospace;font-size:12px;background:rgba(3,10,26,.85);padding:2px 6px;border-radius:5px;color:#67e8f9;}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:520px){.split{grid-template-columns:1fr;}}
+.fb-item{padding:10px;border-radius:11px;background:rgba(10,21,48,.7);border:1px solid var(--line);margin-bottom:8px;font-size:12.5px;line-height:1.65;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar" id="topbar"></div>
+  <div id="view"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div id="modalRoot"></div>
+
+<script>
+'use strict';
+/* =========================================================
+   电路侦探社——中考电学闯关
+   单文件版  localStorage 持久化
+   ========================================================= */
+
+/* ---------- 0. 基础工具 ---------- */
+function $(s, r){ return (r||document).querySelector(s); }
+function $$(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
+function esc(s){
+  return String(s===null||s===undefined?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+function dateKey(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function getWeekKey(d){
+  var t = new Date(d.getTime()); t.setHours(0,0,0,0);
+  var day = (t.getDay()+6)%7;      // 周一为 0
+  t.setDate(t.getDate()-day);
+  return dateKey(t);
+}
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+var toastTimer = null;
+function toast(msg){
+  var el = $('#toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 1900);
+}
+
+/* ---------- 1. 音效（可开关，全程 try/catch 防报错） ---------- */
+var audioCtx = null;
+function beep(freq, dur, type, vol){
+  if(!state.settings || !state.settings.sound) return;
+  try{
+    if(!audioCtx){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return;
+      audioCtx = new AC();
+    }
+    if(audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
+    var o = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    o.type = type || 'sine';
+    o.frequency.value = freq;
+    o.connect(g); g.connect(audioCtx.destination);
+    var now = audioCtx.currentTime;
+    var v = vol===undefined ? 0.13 : vol;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(v, now+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + dur/1000);
+    o.start(now);
+    o.stop(now + dur/1000 + 0.03);
+  }catch(e){ /* 忽略音频异常，不影响主流程 */ }
+}
+function sfxCorrect(){ beep(880,110,'sine',0.12); setTimeout(function(){ beep(1320,140,'sine',0.11); },100); }
+function sfxWrong(){ beep(240,180,'sawtooth',0.09); }
+function sfxBadge(){ beep(660,110,'triangle',0.12); setTimeout(function(){beep(990,110,'triangle',0.12);},110); setTimeout(function(){beep(1320,220,'triangle',0.12);},220); }
+function sfxClick(){ beep(520,45,'square',0.05); }
+
+/* ---------- 2. 状态与存档 ---------- */
+var LS_KEY = 'CIRCUIT_DETECTIVE_V1';
+
+function defaultState(){
+  return {
+    version: 1,
+    profile: { nickname:'', avatar:'🕵️', className:'初三(1)班', grade:'九年级' },
+    totalScore: 0,
+    weekBaseline: 0,
+    weekKey: getWeekKey(new Date()),
+    correct: 0,
+    answered: 0,
+    maxCombo: 0,
+    totalTimeMs: 0,
+    badges: {},
+    wrongBook: {},
+    qLog: {},
+    firstCorrect: {},
+    typeStats: {},
+    knowledgeStats: {},
+    levelBest: {},
+    lastLogin: '',
+    streakDays: 0,
+    feedback: [],
+    settings: { sound:true },
+    bankEdits: {},
+    imported: []
+  };
+}
+var state = defaultState();
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(!raw) return false;
+    var obj = JSON.parse(raw);
+    if(!obj || typeof obj !== 'object') return false;
+    var base = defaultState();
+    state = Object.assign(base, obj);
+    state.profile  = Object.assign(base.profile,  obj.profile  || {});
+    state.settings = Object.assign({sound:true},   obj.settings || {});
+    if(!Array.isArray(state.feedback)) state.feedback = [];
+    if(!Array.isArray(state.imported)) state.imported = [];
+    if(!state.badges || typeof state.badges!=='object') state.badges = {};
+    if(!state.wrongBook || typeof state.wrongBook!=='object') state.wrongBook = {};
+    if(!state.qLog || typeof state.qLog!=='object') state.qLog = {};
+    if(!state.firstCorrect || typeof state.firstCorrect!=='object') state.firstCorrect = {};
+    if(!state.typeStats || typeof state.typeStats!=='object') state.typeStats = {};
+    if(!state.knowledgeStats || typeof state.knowledgeStats!=='object') state.knowledgeStats = {};
+    if(!state.levelBest || typeof state.levelBest!=='object') state.levelBest = {};
+    if(!state.bankEdits || typeof state.bankEdits!=='object') state.bankEdits = {};
+    var wk = getWeekKey(new Date());
+    if(state.weekKey !== wk){ state.weekKey = wk; state.weekBaseline = state.totalScore; }
+    return true;
+  }catch(e){
+    console.warn('[存档] 读取失败，已使用新存档', e);
+    state = defaultState();
+    return false;
+  }
+}
+function saveState(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+  }catch(e){
+    console.warn('[存档] 写入失败', e);
+    toast('本地存储写入失败，请检查浏览器隐私设置');
+  }
+}
+
+/* 每日首次登录 +5 */
+function checkDailyLogin(){
+  var today = dateKey(new Date());
+  if(state.lastLogin === today) return 0;
+  var y = new Date(Date.now() - 86400000);
+  var yKey = dateKey(y);
+  if(state.lastLogin === yKey) state.streakDays = (state.streakDays||0) + 1;
+  else state.streakDays = 1;
+  state.lastLogin = today;
+  state.totalScore += 5;
+  return 5;
+}
+
+/* ---------- 3. 徽章定义 ---------- */
+var BADGES = [
+  { id:'newbie',   icon:'🔌', name:'电路新手',   desc:'完成第一关',
+    check:function(){ return !!(state.levelBest.l1 && state.levelBest.l1.completed); } },
+
+  { id:'series',   icon:'🔗', name:'串联达人',   desc:'串联规律题累计答对10次',
+    check:function(){
+      var n = 0;
+      QUESTIONS.forEach(function(q){
+        if(q.knowledge.indexOf('串联')>=0 && state.qLog[q.id]) n += (state.qLog[q.id].correct||0);
+      });
+      return n >= 10;
+    } },
+
+  { id:'parallel', icon:'⚡', name:'并联高手',   desc:'并联规律题累计答对10次',
+    check:function(){
+      var n = 0;
+      QUESTIONS.forEach(function(q){
+        if(q.knowledge.indexOf('并联')>=0 && state.qLog[q.id]) n += (state.qLog[q.id].correct||0);
+      });
+      return n >= 10;
+    } },
+
+  { id:'ohm',      icon:'📐', name:'欧姆定律大师', desc:'欧姆定律题正确率≥90%（至少作答10次）',
+    check:function(){
+      var ok=0, all=0;
+      QUESTIONS.forEach(function(q){
+        if(q.knowledge.indexOf('欧姆定律')>=0 && state.qLog[q.id]){
+          ok += (state.qLog[q.id].correct||0);
+          all += (state.qLog[q.id].correct||0) + (state.qLog[q.id].wrong||0);
+        }
+      });
+      return all >= 10 && ok/all >= 0.9;
+    } },
+
+  { id:'power',    icon:'💡', name:'电功率专家', desc:'电功率/电功类题累计答对15次',
+    check:function(){
+      var n = 0;
+      QUESTIONS.forEach(function(q){
+        if((q.knowledge.indexOf('电功率')>=0 || q.knowledge.indexOf('电功')>=0 || q.knowledge.indexOf('焦耳')>=0)
+           && state.qLog[q.id]) n += (state.qLog[q.id].correct||0);
+      });
+      return n >= 15;
+    } },
+
+  { id:'fault',    icon:'🔍', name:'故障克星',   desc:'故障排查题连续答对5题',
+    check:function(){ return (state._faultStreak||0) >= 5; } },
+
+  { id:'safety',   icon:'🛡️', name:'安全用电卫士', desc:'家庭电路与安全用电题全部答对（≥6次）',
+    check:function(){
+      var ok=0, wrong=0;
+      QUESTIONS.forEach(function(q){
+        if((q.knowledge.indexOf('家庭电路')>=0 || q.knowledge.indexOf('安全用电')>=0 || q.knowledge.indexOf('触电')>=0)
+           && state.qLog[q.id]){
+          ok += (state.qLog[q.id].correct||0);
+          wrong += (state.qLog[q.id].wrong||0);
+        }
+      });
+      return (ok+wrong) >= 6 && wrong === 0;
+    } },
+
+  { id:'experiment', icon:'🧪', name:'实验小能手', desc:'电学实验题正确率≥90%（≥5次）',
+    check:function(){
+      var ok=0, all=0;
+      QUESTIONS.forEach(function(q){
+        if((q.type==='order' || q.type==='reading') && state.qLog[q.id]){
+          ok += (state.qLog[q.id].correct||0);
+          all += (state.qLog[q.id].correct||0) + (state.qLog[q.id].wrong||0);
+        }
+      });
+      return all >= 5 && ok/all >= 0.9;
+    } },
+
+  { id:'reading',  icon:'📊', name:'读数达人',   desc:'电表读数题全部答对（≥3次）',
+    check:function(){
+      var ok=0, wrong=0;
+      QUESTIONS.forEach(function(q){
+        if(q.type==='reading' && state.qLog[q.id]){
+          ok += (state.qLog[q.id].correct||0);
+          wrong += (state.qLog[q.id].wrong||0);
+        }
+      });
+      return (ok+wrong) >= 3 && wrong === 0 && ok > 0;
+    } },
+
+  { id:'combo',    icon:'🔥', name:'连击王者',   desc:'最高连击达到10次',
+    check:function(){ return (state.maxCombo||0) >= 10; } },
+
+  { id:'perfect',  icon:'🏆', name:'满分侦探',   desc:'任意关卡获得满分',
+    check:function(){
+      var ids = Object.keys(state.levelBest||{});
+      for(var i=0;i<ids.length;i++){
+        var lv = state.levelBest[ids[i]];
+        if(lv && lv.full && lv.score >= lv.full && lv.full > 0) return true;
+      }
+      return false;
+    } },
+
+  { id:'streak7',  icon:'📅', name:'持之以恒',   desc:'连续登录7天',
+    check:function(){ return (state.streakDays||0) >= 7; } },
+
+  { id:'master',   icon:'👑', name:'电学宗师',   desc:'总积分≥2000且正确率≥90%（≥50题）',
+    check:function(){
+      if(state.totalScore < 2000) return false;
+      if(state.answered < 50) return false;
+      return state.correct / state.answered >= 0.9;
+    } }
+];
+
+var _badgeQueue = [];
+var _badgeShowing = false;
+function checkBadges(){
+  var newly = [];
+  BADGES.forEach(function(b){
+    if(state.badges[b.id]) return;
+    var ok = false;
+    try{ ok = !!b.check(); }catch(e){ ok = false; }
+    if(ok){ state.badges[b.id] = Date.now(); newly.push(b); }
+  });
+  if(newly.length){
+    saveState();
+    _badgeQueue = _badgeQueue.concat(newly);
+    showNextBadge();
+  }
+  return newly;
+}
+function showNextBadge(){
+  if(_badgeShowing) return;
+  if(!_badgeQueue.length) return;
+  _badgeShowing = true;
+  var b = _badgeQueue.shift();
+  sfxBadge();
+  var el = document.createElement('div');
+  el.className = 'badge-pop';
+  el.innerHTML =
+    '<div class="bp-i">'+b.icon+'</div>'+
+    '<div class="bp-t">🏅 解锁新徽章</div>'+
+    '<div class="bp-n">'+esc(b.name)+'</div>'+
+    '<div class="bp-d">'+esc(b.desc)+'</div>'+
+    '<div style="margin-top:16px"><button type="button" class="btn primary sm" id="badgePopOk">收下啦</button></div>';
+  document.body.appendChild(el);
+  requestAnimationFrame(function(){ el.classList.add('show'); });
+  var close = function(){
+    el.classList.remove('show');
+    setTimeout(function(){
+      if(el.parentNode) el.parentNode.removeChild(el);
+      _badgeShowing = false;
+      showNextBadge();
+      if(ui.screen === 'badges') renderView();
+    }, 280);
+  };
+  el.addEventListener('click', function(ev){
+    if(ev.target && (ev.target.id === 'badgePopOk' || ev.target === el)) close();
+  });
+  setTimeout(function(){ if(document.body.contains(el)) close(); }, 4200);
+}
+
+/* ---------- 4. 电路图 / 图像 SVG 生成器 ---------- */
+function ammeterSVG(){
+  var cx=150, cy=128, R=96, start=210, sweep=240, N=30;
+  function pt(deg, r){
+    var rad = deg*Math.PI/180;
+    return [ cx + r*Math.cos(rad), cy - r*Math.sin(rad) ];
+  }
+  var ticks='', labels='', i, deg, p1, p2, lp, major;
+  for(i=0;i<=N;i++){
+    deg = start - (i/N)*sweep;
+    major = (i%5===0);
+    p1 = pt(deg, R);
+    p2 = pt(deg, R - (major?16:8));
+    ticks += '<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+
+             '" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+
+             '" stroke="'+(major?'#7dd3fc':'#2b7fb8')+'" stroke-width="'+(major?2:1)+
+             '" stroke-linecap="round"/>';
+  }
+  for(i=0;i<=N;i+=5){
+    deg = start - (i/N)*sweep;
+    lp = pt(deg, R-31);
+    labels += '<text x="'+lp[0].toFixed(1)+'" y="'+(lp[1]+4).toFixed(1)+
+              '" fill="#bae6fd" font-size="11" text-anchor="middle" font-family="monospace">'+
+              (i/N*0.6).toFixed(1)+'</text>';
+  }
+  var pd = start - (0.24/0.6)*sweep;
+  var pp = pt(pd, 76);
+  return '<svg viewBox="0 0 300 190" role="img" aria-label="电流表表盘，指针指在0.2A右侧第二小格">'+
+    '<defs><radialGradient id="amg" cx="50%" cy="70%"><stop offset="0%" stop-color="#0d2a4d"/><stop offset="100%" stop-color="#050f22"/></radialGradient></defs>'+
+    '<rect x="3" y="3" width="294" height="184" rx="16" fill="url(#amg)" stroke="#1d4ed8" stroke-width="1.5"/>'+
+    ticks+labels+
+    '<line x1="'+cx+'" y1="'+cy+'" x2="'+pp[0].toFixed(1)+'" y2="'+pp[1].toFixed(1)+
+      '" stroke="#f472b6" stroke-width="2.6" stroke-linecap="round" style="filter:drop-shadow(0 0 5px #f472b6)"/>'+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="6.5" fill="#f472b6"/>'+
+    '<text x="150" y="104" fill="#67e8f9" font-size="15" text-anchor="middle" font-weight="bold">A</text>'+
+    '<text x="150" y="173" fill="#60a5fa" font-size="12" text-anchor="middle">量程 0～0.6A　分度值 0.02A</text>'+
+  '</svg>';
+}
+
+function uiGraphSVG(){
+  var X0=62, X1=268, Y0=206, Y1=42;
+  function gx(I){ return X0 + (I/0.4)*(X1-X0); }
+  function gy(U){ return Y0 - (U/8)*(Y0-Y1); }
+  var s='';
+  var i;
+  for(i=0;i<=4;i++){
+    var yy = gy(i*2);
+    s += '<line x1="'+X0+'" y1="'+yy.toFixed(1)+'" x2="'+X1+'" y2="'+yy.toFixed(1)+'" stroke="rgba(56,189,248,.12)" stroke-width="1"/>';
+    s += '<text x="'+(X0-8)+'" y="'+(yy+4).toFixed(1)+'" fill="#60a5fa" font-size="11" text-anchor="end">'+(i*2)+'</text>';
+  }
+  for(i=0;i<=4;i++){
+    var xx = gx(i*0.1);
+    s += '<line x1="'+xx.toFixed(1)+'" y1="'+Y0+'" x2="'+xx.toFixed(1)+'" y2="'+Y1+'" stroke="rgba(56,189,248,.12)" stroke-width="1"/>';
+    s += '<text x="'+xx.toFixed(1)+'" y="'+(Y0+18)+'" fill="#60a5fa" font-size="11" text-anchor="middle">'+(i*0.1).toFixed(1)+'</text>';
+  }
+  s += '<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X1+12)+'" y2="'+Y0+'" stroke="#38bdf8" stroke-width="1.8"/>';
+  s += '<line x1="'+X0+'" y1="'+Y0+'" x2="'+X0+'" y2="'+(Y1-12)+'" stroke="#38bdf8" stroke-width="1.8"/>';
+  s += '<polygon points="'+(X1+12)+','+Y0+' '+(X1+3)+','+(Y0-4)+' '+(X1+3)+','+(Y0+4)+'" fill="#38bdf8"/>';
+  s += '<polygon points="'+X0+','+(Y1-12)+' '+(X0-4)+','+(Y1-3)+' '+(X0+4)+','+(Y1-3)+'" fill="#38bdf8"/>';
+  s += '<text x="'+(X1+16)+'" y="'+(Y0+5)+'" fill="#7dd3fc" font-size="12">I/A</text>';
+  s += '<text x="'+(X0-4)+'" y="'+(Y1-20)+'" fill="#7dd3fc" font-size="12">U/V</text>';
+  // 直线
+  s += '<line x1="'+gx(0)+'" y1="'+gy(0)+'" x2="'+gx(0.4)+'" y2="'+gy(8)+'" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(34,211,238,.8))"/>';
+  // 关键点 (0.3, 6)
+  var px = gx(0.3), py = gy(6);
+  s += '<line x1="'+X0+'" y1="'+py.toFixed(1)+'" x2="'+px.toFixed(1)+'" y2="'+py.toFixed(1)+'" stroke="#f472b6" stroke-width="1.2" stroke-dasharray="5,4"/>';
+  s += '<line x1="'+px.toFixed(1)+'" y1="'+Y0+'" x2="'+px.toFixed(1)+'" y2="'+py.toFixed(1)+'" stroke="#f472b6" stroke-width="1.2" stroke-dasharray="5,4"/>';
+  s += '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="5" fill="#f472b6"/>';
+  s += '<text x="'+(px+9).toFixed(1)+'" y="'+(py-9).toFixed(1)+'" fill="#fbcfe8" font-size="12">(0.3A, 6V)</text>';
+  return '<svg viewBox="0 0 320 236" role="img" aria-label="某导体U-I关系图像，过原点直线">'+
+    '<rect x="2" y="2" width="316" height="232" rx="14" fill="#050f22" stroke="rgba(56,189,248,.25)"/>'+ s +'</svg>';
+}
+
+function circuitSVG(opts){
+  opts = opts || {};
+  // 矩形串联电路：上=电源, 右=电流表, 下=灯泡, 左=开关
+  var W=340,H=286;
+  var s = '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="串联电路图">';
+  s += '<rect x="2" y="2" width="'+(W-4)+'" height="'+(H-4)+'" rx="14" fill="#050f22" stroke="rgba(56,189,248,.25)"/>';
+  // 导线
+  s += '<path d="M70 60 H 270 M 270 60 V 210 M 270 210 H 70 M 70 210 V 60" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>';
+  // 电源（上边中点）
+  s += '<g><line x1="150" y1="48" x2="150" y2="72" stroke="#22d3ee" stroke-width="2.6"/>'+
+       '<line x1="176" y1="54" x2="176" y2="66" stroke="#22d3ee" stroke-width="5"/>'+
+       '<text x="163" y="42" fill="#7dd3fc" font-size="11" text-anchor="middle">电源</text></g>';
+  // 电流表（右边中点）
+  s += '<g><circle cx="270" cy="135" r="17" fill="#06203a" stroke="#22d3ee" stroke-width="2"/>'+
+       '<text x="270" y="141" fill="#67e8f9" font-size="16" text-anchor="middle" font-weight="bold">A</text></g>';
+  // 灯泡（下边中点）
+  s += '<g><circle cx="170" cy="210" r="16" fill="#0a1a34" stroke="#22d3ee" stroke-width="2"/>'+
+       '<line x1="157" y1="197" x2="183" y2="223" stroke="#a5f3fc" stroke-width="1.8"/>'+
+       '<line x1="183" y1="197" x2="157" y2="223" stroke="#a5f3fc" stroke-width="1.8"/>'+
+       '<text x="170" y="246" fill="#7dd3fc" font-size="11" text-anchor="middle">小灯泡 L</text></g>';
+  // 开关（左边中点）
+  s += '<g><circle cx="70" cy="120" r="3.5" fill="#38bdf8"/><circle cx="70" cy="150" r="3.5" fill="#38bdf8"/>'+
+       '<line x1="70" y1="150" x2="86" y2="120" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>'+
+       '<text x="34" y="139" fill="#7dd3fc" font-size="11">开关S</text></g>';
+  // 电压表并联在灯泡两端
+  s += '<path d="M128 210 V 262 H 212 V 210" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round"/>';
+  s += '<circle cx="170" cy="262" r="17" fill="#2a0f26" stroke="#f472b6" stroke-width="2"/>';
+  s += '<text x="170" y="268" fill="#fbcfe8" font-size="16" text-anchor="middle" font-weight="bold">V</text>';
+  s += '<text x="252" y="266" fill="#f9a8d4" font-size="11">电压表</text>';
+  s += '</svg>';
+  return s;
+}
+
+/* ---------- 5. 题库 ---------- */
+var LEVELS = [
+  { id:'l1', num:1, name:'电路基础与连接',  desc:'电流方向·电路连接·电表使用·读数' },
+  { id:'l2', num:2, name:'串并联与电流电压规律', desc:'串并联特点·电流电压规律·并联电阻·图像' },
+  { id:'l3', num:3, name:'欧姆定律与计算',  desc:'欧姆定律理解·计算·电阻影响因素' },
+  { id:'l4', num:4, name:'电功率与焦耳定律', desc:'额定功率·电功计算·焦耳定律·功率比较' },
+  { id:'l5', num:5, name:'家庭电路与安全用电', desc:'家庭电路·三孔插座·电能表·触电急救' },
+  { id:'l6', num:6, name:'故障排查大案',    desc:'断路·短路·家庭电路故障综合判断' }
+];
+
+var QUESTIONS = [
+
+/* ===================== 第一关 ===================== */
+{
+  id:'L1-01', level:'l1', type:'single', kind:'choice',
+  knowledge:'电流方向', difficulty:'简单', score:5,
+  stem:'关于电流的方向，下列说法中正确的是（　　）',
+  options:[
+    { k:'A', t:'在电源外部，电流的方向是从电源负极经过用电器流向正极' },
+    { k:'B', t:'在电源外部，电流的方向是从电源正极经过用电器流向负极' },
+    { k:'C', t:'在金属导体中，自由电子定向移动的方向就是电流的方向' },
+    { k:'D', t:'电流的方向与电源的正负极无关，由用电器决定' }
+  ],
+  answer:'B',
+  formula:'电流方向的规定：以正电荷定向移动的方向为电流方向；金属导体中自由电子带负电，其定向移动方向与电流方向相反。',
+  explain:'考什么：电流方向的規定。\n① 物理学规定：正电荷定向移动的方向为电流方向。\n② 在电源外部，电流从电源正极流出，经用电器回到负极，所以B正确、A错误。\n③ 金属导体中发生定向移动的是自由电子，电子带负电，其定向移动方向与电流方向相反，C错误。\n④ 电流方向由电源正负极决定，D错误。\n为什么选B：只有B与"正电荷定向移动方向为电流方向"的规定一致。',
+  pitfall:'易错点：把"自由电子定向移动方向"误当成电流方向。记住口诀"正电荷定向移动方向为电流方向"；电子带负电，方向相反。'
+},
+{
+  id:'L1-02', level:'l1', type:'connect', kind:'choice',
+  knowledge:'电路连接方式', difficulty:'简单', score:5,
+  stem:'学校走廊里安装了两盏照明灯，要求其中一盏灯坏了或单独关掉时，另一盏灯仍能正常发光。这两盏灯的连接方式应该是（　　）',
+  options:[
+    { k:'A', t:'两只灯泡串联' },
+    { k:'B', t:'两只灯泡并联' },
+    { k:'C', t:'两只灯泡串联后一起接在电源两端' },
+    { k:'D', t:'无法确定' }
+  ],
+  answer:'B',
+  formula:'并联电路：各支路两端电压相等，各支路可独立工作、互不影响；串联电路只有一条电流路径，一处断路则全电路断路。',
+  explain:'考什么：串、并联电路的辨别。\n① 题目要求"一盏坏了、另一盏仍能正常发光"，即两只灯互不影响。\n② 并联电路中，各用电器分别接在电源两端，可以独立工作、互不影响，所以B正确。\n③ 串联电路只有一条电流路径，一只灯泡断路时整个电路断路，另一只也不能发光，所以A、C错误。\n④ 由题意可以明确判断，D错误。\n为什么选B：只有并联才能做到"互不影响"。',
+  pitfall:'易错点：把"互不影响"错判成串联。口诀：能独立工作、互不影响的是并联；"一断全断"的是串联。'
+},
+{
+  id:'L1-03', level:'l1', type:'judge', kind:'judge',
+  knowledge:'电压与电流的关系', difficulty:'简单', score:5,
+  stem:'有电压就一定有电流。（　　）',
+  answer:true,
+  formula:'得到持续电流的条件：① 电路两端有电压；② 电路是闭合通路。I = U/R。',
+  explain:'考什么：电路中形成持续电流的条件。\n① 电压是形成电流的原因，但只有电压还不够。\n② 电路中要形成持续电流，必须同时满足两个条件：有电压、电路闭合。\n③ 例如：干电池两端虽然有一定电压，但如果不接用电器（断路），电路中并没有电流；开关断开的电路中，用电器两端有电压但无电流。\n④ 因此"有电压就一定有电流"是错误的。\n结论：说法错误。',
+  pitfall:'易错点：把"电压是形成电流的原因"误解成"有电压就一定有电流"，忽略了"电路必须闭合"这一前提。'
+},
+{
+  id:'L1-04', level:'l1', type:'order', kind:'choice',
+  knowledge:'电流表的使用', difficulty:'中等', score:10,
+  stem:'小明想用电流表测量通过小灯泡的电流。下面是他的实验步骤：\n① 检查电路连接是否正确，有没有短路\n② 根据电路图连接电路，连接过程中开关保持断开\n③ 闭合开关，观察电流表指针偏转情况，记录电流值\n④ 断开开关，整理实验器材\n⑤ 观察电流表，选择合适的量程，把电流表串联接入电路\n正确的实验顺序是（　　）',
+  options:[
+    { k:'A', t:'②⑤①③④' },
+    { k:'B', t:'⑤②①③④' },
+    { k:'C', t:'②①⑤③④' },
+    { k:'D', t:'⑤①②④③' }
+  ],
+  answer:'B',
+  formula:'实验操作规范：选量程 → 连电路（开关断开）→ 检查电路 → 闭合开关读数 → 断开开关、整理器材。电流表必须串联接入，并"正进负出"。',
+  explain:'考什么：用电流表测电流的规范操作顺序。\n正确顺序为：⑤ 先观察电流表、选择合适的量程（选量程必须在接线之前，否则可能因量程过小损坏电表）→ ② 根据电路图连接电路，开关保持断开 → ① 检查电路连接是否正确、有无短路 → ③ 闭合开关，观察指针并记录电流值 → ④ 断开开关，整理实验器材。\n① A把"选择量程"放在"连接电路"之后，不符合规范；\n② C把"选择量程"放在"检查电路"之后，同样错误；\n③ D把"整理器材"放到"读数"之前，明显错误。\n所以选B。',
+  pitfall:'易错点：① 忘记"连接电路时开关必须断开"；② 忘记"选量程要在接线之前"；③ 忘记"读数完毕后断开开关、整理器材"。'
+},
+{
+  id:'L1-05', level:'l1', type:'reading', kind:'numeric',
+  knowledge:'电流表读数', difficulty:'简单', score:5,
+  stem:'某电流表使用 0～0.6A 量程，分度值为 0.02A。测量时指针指在 0.2A 刻度线后面第 2 个小格处（见下图）。请读出电流表的示数，填写在下面（只填数值和单位，例如 0.24A）。',
+  figure:'AMMETER',
+  answerNum:0.24, unit:'A', unitRequired:true,
+  formula:'读数 = 大格示数 + 小格数 × 分度值',
+  explain:'考什么：电流表的读数方法。\n① 确定量程：0～0.6A。\n② 确定分度值：0.02A（每一小格代表 0.02A）。\n③ 指针指在 0.2A 刻度线后面第 2 个小格，所以\n   读数 = 0.2A + 2 × 0.02A = 0.24A。\n④ 记录结果时必须带单位，写作 0.24A。\n为什么是 0.24A：0.2 + 0.04 = 0.24，单位是安培（A）。',
+  pitfall:'易错点：① 漏写单位或写成"0.24"；② 把分度值当成 0.1A（那是 0～3A 量程的分度值）；③ 把 0.2A 后面第 2 个小格数成 0.22A。'
+},
+
+/* ===================== 第二关 ===================== */
+{
+  id:'L2-01', level:'l2', type:'single', kind:'choice',
+  knowledge:'串联电路电流电压规律', difficulty:'中等', score:10,
+  stem:'电阻 R₁=10Ω、R₂=20Ω 串联接在电源两端，则通过它们的电流之比 I₁:I₂ 和它们两端的电压之比 U₁:U₂ 分别是（　　）',
+  options:[
+    { k:'A', t:'1:1，1:2' },
+    { k:'B', t:'1:2，1:1' },
+    { k:'C', t:'1:1，2:1' },
+    { k:'D', t:'2:1，1:2' }
+  ],
+  answer:'A',
+  formula:'串联电路：I = I₁ = I₂（电流处处相等）；U = U₁ + U₂；由 U = IR 得 U₁:U₂ = R₁:R₂。',
+  explain:'考什么：串联电路的电流、电压规律与欧姆定律。\n① 串联电路只有一条电流路径，电流处处相等，所以 I₁:I₂ = 1:1。\n② 由 U = IR，串联时电流相同，电压与电阻成正比，所以\n   U₁:U₂ = R₁:R₂ = 10Ω:20Ω = 1:2。\n③ 故 A 正确。\n为什么选A：串联"电流相等、电压按电阻正比分配"；电压相等是并联的特点，不要混淆。',
+  pitfall:'易错点：① 把"电压与电阻成正比"记成"电压相等"（电压相等是并联的特点）；② 用 U:I 关系时把比例写反，误选 B 或 C。'
+},
+{
+  id:'L2-02', level:'l2', type:'multi', kind:'multi',
+  knowledge:'并联电路电流电压规律', difficulty:'中等', score:10,
+  stem:'关于并联电路，下列说法正确的是（　　）（多选）',
+  options:[
+    { k:'A', t:'并联电路中干路电流等于各支路电流之和' },
+    { k:'B', t:'并联电路中各支路两端的电压相等' },
+    { k:'C', t:'并联电路的总电阻大于任何一个支路的电阻' },
+    { k:'D', t:'并联电路中，电阻越大的支路，通过它的电流越小' }
+  ],
+  answer:['A','B','D'],
+  formula:'并联电路：I = I₁ + I₂；U = U₁ = U₂；1/R = 1/R₁ + 1/R₂（总电阻小于任一支路电阻）。',
+  explain:'考什么：并联电路的电流、电压、电阻规律。\n① 并联电路中，干路电流等于各支路电流之和，即 I = I₁ + I₂，A正确。\n② 各支路两端电压相等，且等于电源电压，即 U = U₁ = U₂，B正确。\n③ 并联总电阻的倒数等于各支路电阻倒数之和，所以总电阻小于任何一个支路电阻。例如 R₁=6Ω、R₂=3Ω 并联，总电阻为 1/(1/6+1/3) = 1/(1/2) = 2Ω，2Ω 比 6Ω、3Ω 都小，C错误。\n④ 各支路电压相同时，由 I = U/R 可知，电阻越大，通过它的电流越小，D正确。\n所以选 A、B、D。',
+  pitfall:'易错点：① 误以为"并联总电阻等于各电阻之和"（那是串联）；② 忘记"并联总电阻比任何一条支路的电阻都小"，把C当成正确。'
+},
+{
+  id:'L2-03', level:'l2', type:'fill', kind:'numeric',
+  knowledge:'并联电阻计算', difficulty:'中等', score:10,
+  stem:'把 R₁=6Ω 和 R₂=3Ω 的两个电阻并联后接入电路，并联后的总电阻是 ________ Ω。',
+  answerNum:2, unit:'Ω', unitRequired:false,
+  formula:'1/R = 1/R₁ + 1/R₂；也可用 R = R₁R₂/(R₁+R₂)。',
+  explain:'考什么：并联电路总电阻的计算。\n① 由并联电阻规律：\n   1/R = 1/R₁ + 1/R₂ = 1/6Ω + 1/3Ω = 1/6 + 2/6 = 3/6 = 1/2。\n② 所以 R = 2Ω。\n③ 验证：2Ω 比 6Ω、3Ω 都小，符合"并联总电阻小于任一支路电阻"的规律。\n为什么是2Ω：代入 1/R = 1/6 + 1/3 = 1/2，取倒数得 R = 2Ω。',
+  pitfall:'易错点：① 直接把 6Ω + 3Ω = 9Ω 当作总电阻（那是串联的算法）；② 忘记取倒数，把 1/2 当成答案；③ 单位写成 A 或 V。'
+},
+{
+  id:'L2-04', level:'l2', type:'image', kind:'numeric',
+  knowledge:'U-I图像分析', difficulty:'中等', score:10,
+  stem:'某段导体两端的电压 U 与通过它的电流 I 的关系图像如下图所示。由图可知，该导体的电阻是 ________ Ω。',
+  figure:'UIGRAPH',
+  answerNum:20, unit:'Ω', unitRequired:false,
+  formula:'R = U/I（取图像上任意一点的坐标计算）。',
+  explain:'考什么：U-I 图像的识别与欧姆定律的应用。\n① 图像是一条过原点的直线，说明 U 与 I 成正比，该导体是定值电阻。\n② 图像中标注了一点：当 I = 0.3A 时，U = 6V。（也可以任取图像上其他点，如 I = 0.2A 时 U = 4V。）\n③ 由欧姆定律变形公式：\n   R = U/I = 6V ÷ 0.3A = 20Ω。\n④ 用另一点检验：4V ÷ 0.2A = 20Ω，结果一致，说明读数正确。\n为什么是20Ω：U-I 图像上纵坐标与横坐标的比值就是电阻，且为定值。',
+  pitfall:'易错点：① 把图像的"斜率"当成电阻的倒数（斜率是 ΔU/ΔI，其数值恰好等于电阻，但这道题直接用某点坐标求 R=U/I 更稳妥）；② 把横轴 0.3A 看成 3A；③ 把 U 和 I 的位置代反，写成 R = I/U。'
+},
+
+/* ===================== 第三关 ===================== */
+{
+  id:'L3-01', level:'l3', type:'single', kind:'choice',
+  knowledge:'欧姆定律理解', difficulty:'中等', score:10,
+  stem:'关于欧姆定律 I = U/R，下列说法中正确的是（　　）',
+  options:[
+    { k:'A', t:'导体的电阻与它两端的电压成正比' },
+    { k:'B', t:'导体的电阻与通过它的电流成反比' },
+    { k:'C', t:'导体两端的电压一定时，通过导体的电流与导体的电阻成反比' },
+    { k:'D', t:'导体中的电流越大，它两端的电压一定越小' }
+  ],
+  answer:'C',
+  formula:'I = U/R；R = U/I（计算式，不是决定式）。电阻由材料、长度、横截面积（和温度）决定。',
+  explain:'考什么：对欧姆定律的正确理解与公式变形。\n① 电阻是导体本身的一种性质，由导体的材料、长度、横截面积（以及温度）决定，与电压、电流无关。R = U/I 只是电阻的**计算式**，不能理解为"电阻由电压、电流决定"，A、B错误。\n② 由 I = U/R 可知，当电压 U 一定时，电流 I 与电阻 R 成反比，C正确。\n③ 由 U = IR 可知，电阻相同时，电流越大电压越大（而不是越小），D错误。\n所以选C。',
+  pitfall:'易错点：把数学变形 R = U/I 误解为"电阻由电压和电流决定"。牢记：电阻是导体本身的性质，U 和 I 改变时，R 不变。'
+},
+{
+  id:'L3-02', level:'l3', type:'calc', kind:'numeric',
+  knowledge:'欧姆定律计算', difficulty:'中等', score:10,
+  stem:'把一个阻值为 R = 10Ω 的定值电阻接在电源两端，通过它的电流为 I = 0.6A。求这个电阻两端的电压 U。\n（在下面输入数值并选择正确的单位）',
+  unitOptions:['V','A','Ω','W','J'],
+  answerNum:6, unit:'V',
+  formula:'U = IR',
+  explain:'考什么：欧姆定律的变形公式 U = IR 的应用。\n已知：R = 10Ω，I = 0.6A。\n求：U = ?\n代入公式：\n  U = IR = 0.6A × 10Ω = 6V。\n单位检验：A × Ω = V，单位正确。\n因此电压为 6V。（也可由物理意义理解：1Ω 的电阻通过 1A 电流时两端电压为 1V。）',
+  pitfall:'易错点：① 公式选错，用 R = U/I 去求电压；② 单位写成"6A"或"6Ω"；③ 计算 0.6×10 时小数点位置出错写成 60。'
+},
+{
+  id:'L3-03', level:'l3', type:'fill', kind:'numeric',
+  knowledge:'欧姆定律计算', difficulty:'中等', score:10,
+  stem:'一个定值电阻两端的电压为 6V 时，通过它的电流是 0.3A。当它两端的电压增大到 10V 时，通过它的电流是 ________ A（设电阻不随温度变化）。',
+  answerNum:0.5, unit:'A', unitRequired:false,
+  formula:'R = U/I（先求电阻，再用 I = U/R 求新电流）；或由 I₁/I₂ = U₁/U₂ 直接求。',
+  explain:'考什么：欧姆定律的综合应用，以及"电阻是定值"这一关键条件。\n第一步：先由已知条件求电阻。\n  R = U₁/I₁ = 6V ÷ 0.3A = 20Ω。\n第二步：电阻不变，改用新的电压求电流。\n  I₂ = U₂/R = 10V ÷ 20Ω = 0.5A。\n比例法验证：\n  I₂/I₁ = U₂/U₁ = 10/6 = 5/3，所以 I₂ = 0.3A × 5/3 = 0.5A，一致。\n因此电流是 0.5A。',
+  pitfall:'易错点：① 忘记电阻不变，直接用 10V 乘 0.3A 之类乱算；② 把"电压增大电流一定增大"当成"电流与电压成正比"却不先求 R；③ 单位漏写或写成"0.5V"。'
+},
+{
+  id:'L3-04', level:'l3', type:'single', kind:'choice',
+  knowledge:'导体电阻的影响因素', difficulty:'困难', score:15,
+  stem:'把一根粗细均匀的电阻丝对折后，再接入原来的电路中（两端电压不变）。与对折前相比，这根电阻丝的电阻将（　　）',
+  options:[
+    { k:'A', t:'变为原来的 2 倍' },
+    { k:'B', t:'变为原来的 1/2' },
+    { k:'C', t:'变为原来的 1/4' },
+    { k:'D', t:'变为原来的 4 倍' }
+  ],
+  answer:'C',
+  formula:'R = ρL/S。电阻丝对折：长度变为 L/2，横截面积变为 2S。',
+  explain:'考什么：导体电阻的决定因素。\n① 导体电阻 R = ρL/S，与材料、长度 L、横截面积 S 有关。\n② 把电阻丝对折后，长度变为原来的 1/2，即 L′ = L/2；\n③ 同时两股并在一起，横截面积变为原来的 2 倍，即 S′ = 2S。\n④ 代入公式：\n   R′ = ρL′/S′ = ρ(L/2)/(2S) = (1/4)·(ρL/S) = R/4。\n所以电阻变为原来的 1/4，选 C。\n（也可理解为：长度减半使电阻变为 1/2，横截面积加倍又使电阻再变为 1/2，1/2 × 1/2 = 1/4。）',
+  pitfall:'易错点：① 只考虑长度减半，忽略横截面积加倍，误选 B；② 把"对折"理解成"串联两段"，误以为电阻是 1/2。记住：对折 = 长度减半 + 横截面积加倍，电阻变为 1/4。'
+},
+
+/* ===================== 第四关 ===================== */
+{
+  id:'L4-01', level:'l4', type:'single', kind:'choice',
+  knowledge:'额定电压与额定功率', difficulty:'中等', score:10,
+  stem:'一只灯泡上标有"220V 40W"字样，下列关于它的说法中正确的是（　　）',
+  options:[
+    { k:'A', t:'这只灯泡在任何电压下工作时的功率都是 40W' },
+    { k:'B', t:'这只灯泡只有在 220V 电压下工作时，功率才是 40W' },
+    { k:'C', t:'这只灯泡正常工作时的电流一定是 40A' },
+    { k:'D', t:'这只灯泡的电阻一定是 40Ω' }
+  ],
+  answer:'B',
+  formula:'额定值：P = UI，正常发光时 I = P/U，R = U²/P；实际功率随实际电压变化。',
+  explain:'考什么：额定电压、额定功率的含义及额定功率计算。\n① "220V 40W"表示：灯泡的额定电压为 220V，在 220V 电压下正常发光时的功率（额定功率）为 40W，所以 B 正确。\n② 实际电压改变时，实际功率也随之改变（如实际电压低于 220V 时，实际功率小于 40W），A 错误。\n③ 正常发光时的电流：I = P/U = 40W ÷ 220V ≈ 0.18A，不是 40A，C 错误。\n④ 正常发光时的电阻：R = U²/P = (220V)² ÷ 40W = 48400÷40 = 1210Ω，不是 40Ω，D 错误。\n所以选 B。\n注意：实际功率用 P实 = U实²/R 计算，R 可近似认为不变。',
+  pitfall:'易错点：① 把"额定功率 40W"当成"任何电压下都是 40W"；② 用 P=UI 求电流时，把 220 和 40 直接相加或用错公式；③ 误以为"220V 40W"中的 40 就是电阻值。'
+},
+{
+  id:'L4-02', level:'l4', type:'calc', kind:'numeric',
+  knowledge:'电功计算', difficulty:'中等', score:10,
+  stem:'一个用电器接在 220V 的电源上正常工作，通过它的电流是 0.5A。求它工作 60s 消耗的电能 W。\n（在下面输入数值并选择正确的单位）',
+  unitOptions:['J','W','V','A','Ω'],
+  answerNum:6600, unit:'J',
+  formula:'W = UIt',
+  explain:'考什么：电功（电能）的计算，是电功率的延伸公式 W = UIt。\n已知：U = 220V，I = 0.5A，t = 60s。\n求：W = ?\n代入公式：\n  W = UIt = 220V × 0.5A × 60s = 110 × 60 = 6600J。\n单位检验：V × A = W（瓦），W × s = J（焦耳），所以单位是 J。\n因此消耗的电能为 6600J。\n（等价表示：W = 6600J = 1.83×10⁻³ kW·h。）',
+  pitfall:'易错点：① 时间没有换算成秒（题目已给 60s，若给"1min"需换算）；② 把单位写成"W"（瓦是功率单位，不是能量单位）；③ 计算 220×0.5 出错。'
+},
+{
+  id:'L4-03', level:'l4', type:'multi', kind:'multi',
+  knowledge:'焦耳定律', difficulty:'困难', score:15,
+  stem:'关于焦耳定律 Q = I²Rt，下列说法中正确的是（　　）（多选）',
+  options:[
+    { k:'A', t:'电流通过导体产生的热量与电流的二次方成正比' },
+    { k:'B', t:'电流通过导体产生的热量与导体的电阻成正比' },
+    { k:'C', t:'电流通过导体产生的热量与通电时间成正比' },
+    { k:'D', t:'焦耳定律只适用于纯电阻电路，电动机等含其他用电器不能使用' }
+  ],
+  answer:['A','B','C'],
+  formula:'焦耳定律：Q = I²Rt。W = UIt 是电功；在纯电阻电路中 W = Q；在非纯电阻电路（如电动机、电解槽）中 W > Q。',
+  explain:'考什么：焦耳定律的物理意义及适用范围。\n① 由 Q = I²Rt 可知：电流通过导体产生的热量与电流的二次方成正比、与导体的电阻成正比、与通电时间成正比，所以 A、B、C 都正确。\n② 焦耳定律是实验总结出来的普遍规律，适用于一切电流通过导体发热的情况，既适用于纯电阻电路，也适用于电动机、电解槽等非纯电阻电路，所以 D 错误。\n③ 需要区分：W = UIt 是电流做的功（消耗的电能）；Q = I²Rt 是产生的热量。\n   - 纯电阻电路（电能全部转化为内能）：W = Q，可用 W = UIt = I²Rt = U²t/R 中的任一个。\n   - 非纯电阻电路（如电动机）：W = Q + 其他形式的能，此时热量只能用 Q = I²Rt 计算。\n所以选 A、B、C。',
+  pitfall:'易错点：① 认为焦耳定律"只适用于纯电阻电路"（错，它适用于一切电阻发热计算）；② 在电动机电路中用 Q = UIt 计算热量（错，应使用 Q = I²Rt）。'
+},
+{
+  id:'L4-04', level:'l4', type:'calc', kind:'numeric',
+  knowledge:'焦耳定律计算', difficulty:'中等', score:10,
+  stem:'某电阻丝的阻值为 R = 10Ω，通过它的电流为 I = 0.5A，通电时间 t = 1min。求这段时间内电阻丝产生的热量 Q。\n（在下面输入数值并选择正确的单位）',
+  unitOptions:['J','W','V','A','Ω'],
+  answerNum:150, unit:'J',
+  formula:'Q = I²Rt',
+  explain:'考什么：焦耳定律的直接计算。\n已知：R = 10Ω，I = 0.5A，t = 1min = 60s（必须换算成秒！）。\n求：Q = ?\n代入公式：\n  Q = I²Rt = (0.5A)² × 10Ω × 60s\n    = 0.25 × 10 × 60\n    = 0.25 × 600\n    = 150J。\n单位检验：A²·Ω·s = A²·(V/A)·s = A·V·s = W·s = J，单位正确。\n因此产生的热量为 150J。',
+  pitfall:'易错点：① 忘记把 1min 换算成 60s，直接代入 1 算出 2.5J；② 忘记对电流做平方，算成 0.5×10×60 = 300J；③ 单位写成"W"。'
+},
+{
+  id:'L4-05', level:'l4', type:'judge', kind:'judge',
+  knowledge:'串联电路电功率', difficulty:'中等', score:10,
+  stem:'在串联电路中，电阻越大的用电器，消耗的电功率越大。（　　）',
+  answer:true,
+  formula:'串联：I 相同，P = I²R，功率与电阻成正比；并联：U 相同，P = U²/R，功率与电阻成反比。',
+  explain:'考什么：串联电路中的电功率比较。\n① 串联电路中电流处处相等，即各用电器的电流 I 相同。\n② 由 P = I²R 可知，在电流相同时，用电器的电功率与它的电阻成正比。\n③ 所以电阻越大的用电器，消耗的电功率越大。说法正确。\n④ 对照记忆：\n   - 串联：电流相同 → P = I²R → 电阻越大，功率越大；\n   - 并联：电压相同 → P = U²/R → 电阻越大，功率越小。\n结论：该说法正确。',
+  pitfall:'易错点：与并联电路的规律混淆。并联电路中电压相同，由 P = U²/R 知电阻越大功率越小，结论与串联时相反。'
+},
+
+/* ===================== 第五关 ===================== */
+{
+  id:'L5-01', level:'l5', type:'single', kind:'choice',
+  knowledge:'家庭电路电压', difficulty:'简单', score:5,
+  stem:'我国家庭电路的电压是（　　）',
+  options:[
+    { k:'A', t:'36V' },
+    { k:'B', t:'220V' },
+    { k:'C', t:'380V' },
+    { k:'D', t:'110V' }
+  ],
+  answer:'B',
+  formula:'家庭电路电压 220V；对人体安全的电压不高于 36V；动力（工业）用电 380V。',
+  explain:'考什么：常见电压值的记忆。\n① 我国家庭电路的电压是 220V，故选 B。\n② 对人体安全的电压不高于 36V，A 是安全电压而不是家庭电路电压。\n③ 380V 是工业动力用电（三根相线之间的电压），C 错误。\n④ 110V 是美国等部分国家的家庭电路电压，不是我国的，D 错误。',
+  pitfall:'易错点：把"安全电压 36V"和"家庭电路电压 220V"混淆；把 380V 当成家庭电路电压（那是工业用电）。'
+},
+{
+  id:'L5-02', level:'l5', type:'multi', kind:'multi',
+  knowledge:'家庭电路与安全用电', difficulty:'中等', score:10,
+  stem:'关于家庭电路和安全用电，下列说法中正确的是（　　）（多选）',
+  options:[
+    { k:'A', t:'家庭电路中，控制用电器的开关应接在相线（火线）和用电器之间' },
+    { k:'B', t:'三孔插座的上孔（中间孔）应该接地线' },
+    { k:'C', t:'用湿手直接去扳动开关电灯是安全的' },
+    { k:'D', t:'空气开关在电流过大时会自动切断电路，起保护作用' }
+  ],
+  answer:['A','B','D'],
+  formula:'家庭电路组成：进户线（相线、中性线）→ 电能表 → 总开关 → 保险装置（空气开关/熔丝）→ 用电器；三孔插座"左零右火上接地"。',
+  explain:'考什么：家庭电路的连接与安全用电常识。\n① 控制用电器的开关应接在相线（火线）和用电器之间，这样断开开关时用电器不带电，检修更安全，A 正确。\n② 三孔插座的上孔（中间孔）接**地线**，左孔接零线（中性线），右孔接火线（相线）。接地后，若用电器金属外壳漏电，电流会经地线流入大地，防止人体触电，B 正确。\n③ 水是导体，湿手扳动开关时，水会把人体与带电部分连通，极易发生触电事故，C 错误。\n④ 空气开关（或熔丝/保险丝）在电路中电流过大（过载或短路）时会自动切断电路，起到保护作用，D 正确。\n所以选 A、B、D。',
+  pitfall:'易错点：① 把开关接在零线和用电器之间（断开开关后用电器仍带电，不安全）；② 把三孔插座的上孔当成接零线；③ 认为"用湿手操作开关没关系"。'
+},
+{
+  id:'L5-03', level:'l5', type:'judge', kind:'judge',
+  knowledge:'触电方式', difficulty:'中等', score:10,
+  stem:'只要不接触带电体，就一定不会发生触电事故。（　　）',
+  answer:true,
+  formula:'触电类型：单线触电、双线触电（需接触）；高压电弧触电、跨步电压触电（不需接触）。',
+  explain:'考什么：触电的几种类型。\n① 人体触电主要有两类：\n   - 直接接触带电体造成的触电（单线触电、双线触电）；\n   - 不接触带电体也可能发生的触电，如高压电弧触电（人体靠近高压带电体时，高压电弧击穿空气放电）、跨步电压触电（高压电线落地后，人在附近行走，两脚之间存在电压）。\n② 所以"只要不接触带电体就一定不会触电"的说法是错误的。\n③ 安全用电原则：不接触低压带电体，不靠近高压带电体。\n结论：该说法错误。',
+  pitfall:'易错点：只记住"接触带电体才会触电"，忽视高压电弧触电和跨步电压触电。高压电线落地时，不要在附近行走，应远离并提醒他人。'
+},
+{
+  id:'L5-04', level:'l5', type:'fill', kind:'numeric',
+  knowledge:'电能表读数', difficulty:'困难', score:15,
+  stem:'小明家电能表上标有"1200r/(kW·h)"字样，表示每消耗 1kW·h 电能，转盘转过 1200 转。某段时间内转盘转过 60 转，则这段时间内小明家消耗的电能是 ________ kW·h。',
+  answerNum:0.05, unit:'kW·h', unitRequired:false,
+  formula:'W = n / N（n 为实际转数，N 为每消耗 1kW·h 的转数）。',
+  explain:'考什么：电能表参数的含义及电能的计算。\n① "1200r/(kW·h)"表示：消耗 1kW·h 电能时，电能表转盘转过 1200 转。\n② 转盘转过 60 转，消耗的电能为：\n   W = n/N = 60转 ÷ 1200转/(kW·h) = 0.05kW·h。\n③ 单位检验：转 ÷ 转/(kW·h) = kW·h，单位正确。\n④ 折算成焦耳：0.05kW·h = 0.05 × 3.6×10⁶J = 1.8×10⁵J。\n所以消耗的电能为 0.05kW·h。',
+  pitfall:'易错点：① 把比例关系弄反，算成 1200÷60 = 20kW·h；② 忘记单位是 kW·h（度）而不是 J；③ 把 60 转当成 60kW·h。'
+},
+{
+  id:'L5-05', level:'l5', type:'single', kind:'choice',
+  knowledge:'触电急救', difficulty:'简单', score:5,
+  stem:'发现有人触电，下列做法中正确的是（　　）',
+  options:[
+    { k:'A', t:'立即用手把触电者拉开' },
+    { k:'B', t:'立即切断电源，或用干燥的木棍等绝缘物把电线挑开' },
+    { k:'C', t:'用湿毛巾把触电者裹住，拉离电源' },
+    { k:'D', t:'站在原地大声呼叫，等待其他人来救援' }
+  ],
+  answer:'B',
+  formula:'触电急救原则：先断电，再救人；救护者必须避免直接接触触电者和带电体。',
+  explain:'考什么：触电急救的正确方法。\n① 处理触电事故的原则是"先断电、后救人"。\n② 最安全有效的做法是立即切断电源（拉闸断电）；如果来不及，可用干燥的木棍、竹竿等绝缘物把电线挑开，使触电者脱离电源，所以 B 正确。\n③ 直接用手去拉触电者，电流会通过人体形成通路，救护者也会触电，A 错误。\n④ 湿毛巾是导体，会造成救护者触电，C 错误。\n⑤ 触电抢救争分夺秒，应在保证自身安全的前提下迅速行动，并同时拨打 120，D 中"站在原地等待"会延误抢救时机，错误。\n所以选 B。',
+  pitfall:'易错点：① 直接用手拉触电者（救护者也触电）；② 使用湿毛巾、金属棒等导体工具；③ 忘记"先断电、后救人"的原则。'
+},
+
+/* ===================== 第六关 ===================== */
+{
+  id:'L6-01', level:'l6', type:'fault', kind:'choice',
+  knowledge:'电路故障——断路', difficulty:'困难', score:15,
+  stem:'如图，电源、开关 S、电流表 A、小灯泡 L 串联组成电路，电压表 V 并联在小灯泡 L 两端。闭合开关后，发现小灯泡不亮，电流表指针几乎不动（示数约为 0），电压表指针有明显偏转（示数接近电源电压）。若电路中只有一处故障，则故障可能是（　　）',
+  figure:'CIRCUIT',
+  options:[
+    { k:'A', t:'小灯泡 L 被短路' },
+    { k:'B', t:'小灯泡 L 断路（灯丝断了）' },
+    { k:'C', t:'电流表 A 断路' },
+    { k:'D', t:'开关 S 接触不良（断路）' }
+  ],
+  answer:'B',
+  formula:'故障判断口诀：电流表无示数 → 电路断路；电压表有示数 → 电压表两接线柱到电源两端是通路。',
+  explain:'考什么：利用电流表、电压表示数判断电路故障。\n逐项分析：\n① 小灯泡 L 被短路：灯泡不亮，但电路仍是通路，电流表应该有较大的示数，电压表（并联在灯泡两端）示数为 0，与题不符，A 错误。\n② 小灯泡 L 断路：电路断开，电流表无示数（符合）；此时电压表通过电流表（电阻很小）、开关与电源正极相连，另一端直接连电源负极，相当于测电源电压，所以电压表有明显示数（符合）。B 正确。\n③ 电流表 A 断路：整个电路断开，电流表无示数（符合），但电压表的一端经电流表接到电源正极时中间是断的，无法构成通路，所以电压表也无示数，与"电压表有明显偏转"不符，C 错误。\n④ 开关 S 接触不良（断路）：整个电路断开，两个电表都无示数，与题不符，D 错误。\n判断依据：\n  "电流表无示数" → 电路断（不是短路）；\n  "电压表有示数" → 断点在电压表所并联的元件上（L 断路）。\n所以选 B。',
+  pitfall:'易错点：① 看到"灯不亮"就认为是短路；② 忽略"电压表有示数"这一关键信息——它说明断路点在灯泡 L 上，而不是电流表或开关上。记住：电压表测谁的电压，谁就断了。'
+},
+{
+  id:'L6-02', level:'l6', type:'fault', kind:'choice',
+  knowledge:'电路故障——短路', difficulty:'困难', score:15,
+  stem:'如图，电源、开关 S、两个小灯泡 L₁ 和 L₂ 串联。闭合开关后，发现 L₁ 不亮、L₂ 正常发光。若电路中只有一处故障，则故障可能是（　　）',
+  figure:'CIRCUIT',
+  options:[
+    { k:'A', t:'L₁ 断路' },
+    { k:'B', t:'L₁ 被短路' },
+    { k:'C', t:'L₂ 断路' },
+    { k:'D', t:'L₂ 被短路' }
+  ],
+  answer:'B',
+  formula:'串联电路判断口诀：一灯亮一灯不亮 → 不亮的灯被短路；两灯都不亮 → 电路断路。',
+  explain:'考什么：串联电路中短路故障的判断。\n① 题目说"L₂ 正常发光"，说明电路中有电流通过，是一条通路，因此电路中**不存在断路故障**，A（L₁ 断路）和 C（L₂ 断路）都错误。\n② L₁ 不亮，但有电流从 L₂ 通过，说明电流经过 L₁ 时没有消耗电能，L₁ 两端的电压为 0。这说明 L₁ 被导线（或短路线）直接接通而**短路**了，B 正确。\n③ 如果 L₂ 被短路，应该是 L₂ 不亮而 L₁ 亮，与题目描述的现象相反，D 错误。\n判断依据：串联电路中两灯"一只亮、一只不亮"是非常典型的"不亮的灯被短路"现象。\n所以选 B。',
+  pitfall:'易错点：① 把"L₁ 不亮"直接判为 L₁ 断路，忽略了 L₂ 正常发光说明电路是通的；② 分不清"断路"和"短路"——断路则整个串联电路都没有电流，两灯全灭；短路则只有被短路的那只灯不亮，其余灯仍亮且更亮。'
+},
+{
+  id:'L6-03', level:'l6', type:'fault', kind:'choice',
+  knowledge:'家庭电路故障', difficulty:'中等', score:10,
+  stem:'家庭电路中，闭合开关后某盏电灯不亮，但家里其他用电器仍能正常工作。若电路中只有一处故障，下列判断中正确的是（　　）',
+  options:[
+    { k:'A', t:'一定是家庭电路的火线（相线）断路' },
+    { k:'B', t:'一定是家庭电路的零线（中性线）断路' },
+    { k:'C', t:'可能是这盏灯的灯丝断了，或灯座、开关处接触不良' },
+    { k:'D', t:'一定是这盏灯所在的支路发生了短路' }
+  ],
+  answer:'C',
+  formula:'家庭电路是并联电路：各用电器并联，各支路独立工作、互不影响。',
+  explain:'考什么：家庭电路的连接特点与故障分析。\n① 家庭电路中各用电器是**并联**的，各自独立工作、互不影响。\n② 题目说"其他用电器仍能正常工作"，说明干路（火线和零线）都是完好的，否则其他用电器也会停止工作，所以 A、B 都错误。\n③ 故障只能出在这盏灯所在的**支路**上，可能是灯丝断了（断路）、灯座接触不良、开关接触不良等，所以 C 正确，说法用了"可能"，是严谨的。\n④ 如果这盏灯所在支路发生短路，干路电流会剧增，空气开关会跳闸（或保险丝熔断），家里所有用电器都会停止工作，与题意不符，D 错误。\n所以选 C。',
+  pitfall:'易错点：① 认为"灯不亮就是火线断了"，忽略"其他用电器正常工作"这一前提；② 忽视"短路会引发空气开关跳闸"这一重要现象；③ 忽略选项中的"可能/一定"这类程度词，选择过于绝对的选项。'
+},
+{
+  id:'L6-04', level:'l6', type:'fault', kind:'choice',
+  knowledge:'电路故障——短路', difficulty:'困难', score:15,
+  stem:'某同学按图连接好电路（电源、开关 S、小灯泡 L 串联，电压表 V 并联在小灯泡 L 两端，电流表 A 串联在电路中）。闭合开关后，发现小灯泡不亮，电流表指针有明显偏转，电压表指针几乎不动（示数约为 0）。若电路中只有一处故障，则故障可能是（　　）',
+  figure:'CIRCUIT',
+  options:[
+    { k:'A', t:'小灯泡 L 断路' },
+    { k:'B', t:'小灯泡 L 被短路' },
+    { k:'C', t:'电压表断路' },
+    { k:'D', t:'电流表被短路' }
+  ],
+  answer:'B',
+  formula:'故障判断口诀：电流表有示数 → 电路是通路；电压表无示数 → 电压表并联的元件两端电压为 0（被短路）。',
+  explain:'考什么：利用电流表、电压表示数综合判断短路故障。\n逐项分析：\n① 小灯泡 L 断路：电路断开，电流表应该无示数，与"电流表有明显偏转"矛盾，A 错误。\n② 小灯泡 L 被短路：电路仍是通路，且总电阻变小，电流变大，电流表有明显偏转（符合）；同时 L 两端电压为 0，并联在 L 两端的电压表示数为 0（符合）；灯泡中没有电流通过，所以不亮（符合）。B 正确。\n③ 电压表断路：电压表坏了不影响主电路，小灯泡应该能正常发光、电流表有示数，与"灯泡不亮"不符，C 错误。\n④ 电流表被短路：电路仍然导通，小灯泡应该发光，D 错误。\n判断依据：\n  "电流表有示数" → 电路是通路，故障不是断路；\n  "电压表无示数" + "灯不亮" → 电压表并联的元件（L）两端电压为 0，说明 L 被短路。\n所以选 B。',
+  pitfall:'易错点：① 看到"灯不亮"就判为断路，忽略"电流表有示数"这一关键信息；② 不清楚"电压表无示数"既可以表示"并联元件短路"，也可以表示"电压表自身断路"，需结合"灯不亮"一起判断。'
+}
+
+];
+
+/* ---------- 6. 题库读取（含教师修改覆盖） ---------- */
+function getQ(id){
+  var base = null, i;
+  for(i=0;i<QUESTIONS.length;i++){ if(QUESTIONS[i].id === id){ base = QUESTIONS[i]; break; } }
+  if(!base) return null;
+  var edit = state.bankEdits[id];
+  if(edit && typeof edit === 'object') return Object.assign({}, base, edit);
+  return base;
+}
+function getLevelQuestions(levelId){
+  return QUESTIONS.filter(function(q){ return q.level === levelId; }).map(function(q){ return getQ(q.id); });
+}
+function getLevelTotalScore(levelId){
+  return getLevelQuestions(levelId).reduce(function(s,q){ return s + q.score; }, 0);
+}
+function typeLabel(t){
+  return ({single:'单选题', multi:'多选题', judge:'判断题', fill:'填空题', reading:'读数题',
+           calc:'计算题', fault:'故障排查', image:'图像分析', order:'实验排序', connect:'连接方式选择'})[t] || t;
+}
+function diffClass(d){ return d==='简单' ? 'easy' : (d==='中等' ? 'mid' : 'hard'); }
+
+/* ---------- 7. 答案标准化与判分 ---------- */
+var UNIT_MAP = {
+  'A':'A','安':'A','安培':'A','amps':'A','ampere':'A',
+  'V':'V','伏':'V','伏特':'V','volt':'V',
+  'Ω':'Ω','欧':'Ω','欧姆':'Ω','OHM':'Ω',
+  'W':'W','瓦':'W','瓦特':'W','watt':'W',
+  'J':'J','焦':'J','焦耳':'J','joule':'J',
+  'HZ':'Hz','赫':'Hz','赫兹':'Hz',
+  'S':'s','秒':'s','SEC':'s',
+  'MIN':'min','分':'min','分钟':'min',
+  'H':'h','时':'h','小时':'h',
+  'KWH':'kW·h','KW·H':'kW·h','千瓦时':'kW·h','度':'kW·h',
+  '%':'%','N':'N','牛':'N','牛顿':'N',
+  'KG':'kg','千克':'kg','G':'g','克':'g',
+  'M':'m','米':'m','CM':'cm','厘米':'cm','MM':'mm',
+  '㎡':'m²','M2':'m²','平方米':'m²',
+  'M³':'m³','M3':'m³','立方米':'m³','L':'L','升':'L','ML':'mL','毫升':'mL',
+  'C':'C','库':'C','库仑':'C',
+  '℃':'℃','摄氏度':'℃'
+};
+function normalizeUnit(u){
+  if(!u) return '';
+  var k = String(u).trim().replace(/\s+/g,'').replace(/[·・•．.。]/g,'');
+  k = k.replace(/[（(]/g,'').replace(/[）)]/g,'');
+  var up = k.toUpperCase();
+  if(UNIT_MAP[up]) return UNIT_MAP[up];
+  if(UNIT_MAP[k]) return UNIT_MAP[k];
+  // 处理 kW·h 之类的组合
+  if(up.indexOf('KWH')>=0 || up.indexOf('KW')>=0 && up.indexOf('H')>=0) return 'kW·h';
+  return k;
+}
+function unitsEqual(a, b){
+  if(!a && !b) return true;
+  if(!a || !b) return false;
+  return normalizeUnit(a) === normalizeUnit(b);
+}
+
+/* 把用户输入解析成 {value, unit} */
+function parseNumericInput(raw){
+  if(raw === null || raw === undefined) return null;
+  var s = String(raw).trim();
+  if(!s) return null;
+  // 统一常见符号
+  s = s.replace(/\s+/g,'')
+       .replace(/[，,]/g,'')
+       .replace(/。/g,'.')
+       .replace(/[＊*]/g,'×')
+       .replace(/[−–—]/g,'-')
+       .replace(/[＝]/g,'=')
+       .replace(/[（(]/g,'')
+       .replace(/[）)]/g,'');
+  if(!s) return null;
+  var m = s.match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)(.*)$/);
+  if(!m) return null;
+  var num = Number(m[1]);
+  if(!isFinite(num)) return null;
+  return { value: num, unit: (m[2]||'').replace(/[·・•]/g,'·') };
+}
+
+/* 判断数值 + 单位 */
+function judgeNumeric(q, raw){
+  var parsed = parseNumericInput(raw);
+  if(parsed === null){
+    return { ok:false, reason:'format', msg:'请填写数值（可以带单位，例如 0.5A）' };
+  }
+  var target = Number(q.answerNum);
+  var tol = Math.max(1e-9, Math.abs(target) * 1e-6);
+  var numOk = Math.abs(parsed.value - target) <= tol;
+
+  var unitOk = true;
+  var msg = '';
+  if(q.unit){
+    if(!parsed.unit){
+      // 用户没写单位
+      if(q.unitRequired){
+        unitOk = false;
+        msg = '单位不能省略，答案要带上单位（如 '+q.answerNum+q.unit+'）';
+      }
+    }else{
+      if(!unitsEqual(parsed.unit, q.unit)){
+        unitOk = false;
+        msg = '单位写错了，正确单位应该是 '+q.unit;
+      }
+    }
+  }
+  return { ok: numOk && unitOk, numOk: numOk, unitOk: unitOk, msg: msg, parsed: parsed };
+}
+
+/* 多选标准化比较 */
+function sameKeySet(arrA, arrB){
+  if(!Array.isArray(arrA) || !Array.isArray(arrB)) return false;
+  if(arrA.length !== arrB.length) return false;
+  var a = arrA.slice().sort().join(','), b = arrB.slice().sort().join(',');
+  return a === b;
+}
+
+/* ---------- 8. 排行榜 ---------- */
+var RIVALS = [
+  { id:'r01', nickname:'闪电侠',   avatar:'⚡', className:'初三(1)班', grade:'九年级', score:1620, weekScore:180, correct:139, answered:158, maxCombo:13, timeMs:912000, isBot:true },
+  { id:'r02', nickname:'小牛顿',   avatar:'🍎', className:'初三(1)班', grade:'九年级', score:1545, weekScore:120, correct:131, answered:152, maxCombo:11, timeMs:985000, isBot:true },
+  { id:'r03', nickname:'电路幽灵', avatar:'👻', className:'初三(1)班', grade:'九年级', score:1480, weekScore:260, correct:128, answered:150, maxCombo:12, timeMs:870000, isBot:true },
+  { id:'r04', nickname:'法拉第转世', avatar:'🧲', className:'初三(2)班', grade:'九年级', score:1710, weekScore:95,  correct:145, answered:162, maxCombo:15, timeMs:840000, isBot:true },
+  { id:'r05', nickname:'欧姆本姆', avatar:'📐', className:'初三(2)班', grade:'九年级', score:1355, weekScore:210, correct:118, answered:142, maxCombo:10, timeMs:1010000, isBot:true },
+  { id:'r06', nickname:'伏特加冰', avatar:'🧊', className:'初三(2)班', grade:'九年级', score:1290, weekScore:75,  correct:112, answered:140, maxCombo:9,  timeMs:1105000, isBot:true },
+  { id:'r07', nickname:'霓虹侦探', avatar:'🕶️', className:'初三(3)班', grade:'九年级', score:1180, weekScore:150, correct:105, answered:136, maxCombo:8,  timeMs:1176000, isBot:true },
+  { id:'r08', nickname:'保险丝小弟', avatar:'🧵', className:'初三(3)班', grade:'九年级', score:960,  weekScore:60,  correct:88,  answered:124, maxCombo:7,  timeMs:1240000, isBot:true },
+  { id:'r09', nickname:'焦耳天天', avatar:'🔥', className:'初三(3)班', grade:'九年级', score:2050, weekScore:300, correct:158, answered:168, maxCombo:18, timeMs:760000, isBot:true },
+  { id:'r10', nickname:'电闸管理员', avatar:'🎛️', className:'初三(1)班', grade:'九年级', score:880,  weekScore:45,  correct:79,  answered:120, maxCombo:6,  timeMs:1310000, isBot:true }
+];
+
+function myPlayer(){
+  var nick = state.profile.nickname || '我';
+  return {
+    id:'me',
+    nickname: nick,
+    avatar: state.profile.avatar || '🕵️',
+    className: state.profile.className || '初三(1)班',
+    grade: state.profile.grade || '九年级',
+    score: state.totalScore,
+    weekScore: Math.max(0, state.totalScore - (state.weekBaseline||0)),
+    correct: state.correct,
+    answered: state.answered,
+    maxCombo: state.maxCombo,
+    timeMs: state.totalTimeMs,
+    isMe:true
+  };
+}
+function accuracyOf(p){
+  if(!p.answered) return 0;
+  return p.correct / p.answered;
+}
+function getLeaderboard(tab){
+  var all = RIVALS.concat(state.imported || []).concat([myPlayer()]);
+  var cls = state.profile.className, grd = state.profile.grade;
+  var list;
+  if(tab === 'class')       list = all.filter(function(p){ return p.className === cls; });
+  else if(tab === 'grade')  list = all.filter(function(p){ return p.grade === grd; });
+  else                      list = all.slice();
+
+  var key = (tab === 'week') ? 'weekScore' : 'score';
+  list.sort(function(a,b){
+    var d = (b[key]||0) - (a[key]||0);
+    if(d) return d;
+    d = accuracyOf(b) - accuracyOf(a);
+    if(d) return d;
+    d = (b.maxCombo||0) - (a.maxCombo||0);
+    if(d) return d;
+    return (a.timeMs||0) - (b.timeMs||0);
+  });
+  return list;
+}
+
+/* ---------- 9. UI 状态 ---------- */
+var ui = {
+  screen:'home',
+  leaderboardTab:'total',
+  teacherTab:'bank',
+  showFeedback:false
+};
+var quiz = null;
+var quizToken = 0;
+
+/* ---------- 10. 渲染：顶部栏 ---------- */
+function renderTopbar(){
+  var el = $('#topbar');
+  if(!el) return;
+  var bCnt = Object.keys(state.badges||{}).length;
+  var acc = state.answered ? Math.round(state.correct/state.answered*100) : 0;
+  el.innerHTML =
+    '<div class="brand"><span class="logo">🔌</span><span>电路侦探社<small>CIRCUIT DETECTIVE</small></span></div>'+
+    '<div class="hud">'+
+      '<span class="chip">⭐ <b>'+state.totalScore+'</b></span>'+
+      '<span class="chip">🏅 <b>'+bCnt+'</b></span>'+
+      '<span class="chip">🎯 <b>'+acc+'%</b></span>'+
+    '</div>';
+}
+
+/* ---------- 11. 渲染：视图路由 ---------- */
+function renderView(){
+  var el = $('#view');
+  if(!el) return;
+  var html = '';
+  switch(ui.screen){
+    case 'home':        html = viewHome();        break;
+    case 'levels':      html = viewLevels();      break;
+    case 'levelDetail': html = viewLevelDetail(); break;
+    case 'quiz':        html = viewQuiz();        break;
+    case 'result':      html = viewResult();      break;
+    case 'leaderboard': html = viewLeaderboard(); break;
+    case 'badges':      html = viewBadges();      break;
+    case 'wrong':       html = viewWrong();       break;
+    case 'profile':     html = viewProfile();     break;
+    case 'teacher':     html = viewTeacher();     break;
+    default:            html = viewHome();
+  }
+  el.innerHTML = html;
+  // 限时模式计时显示
+  if(ui.screen === 'quiz' && quiz && quiz.mode === 'timed'){
+    var t = $('#timerDisplay');
+    if(t) t.textContent = Math.max(0, quiz.timeLeft);
+  }
+}
+function render(){
+  renderTopbar();
+  renderView();
+}
+
+/* ---------- 12. 首页 ---------- */
+function viewHome(){
+  var avatars = ['🕵️','🦸','🐯','🦊','🐼','🤖','👽','🧙','🦉','🐺','🐲','⚡'];
+  var av = state.profile.avatar || '🕵️';
+  var avHTML = avatars.map(function(a){
+    return '<div class="avatar-pick'+(a===av?' on':'')+'" data-action="pickAvatar" data-v="'+a+'">'+a+'</div>';
+  }).join('');
+  var bCnt = Object.keys(state.badges||{}).length;
+  var acc = state.answered ? Math.round(state.correct/state.answered*100) : 0;
+  var wb = Object.keys(state.wrongBook||{}).length;
+
+  return ''+
+  '<div class="card hero">'+
+    '<h1>电路侦探社</h1>'+
+    '<sub>—— 中考电学闯关 ——</sub>'+
+    '<div class="muted" style="margin-top:10px">化身电路侦探，破案闯关掌握电学核心知识，赚积分、上排行榜、集徽章。</div>'+
+  '</div>'+
+
+  '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>侦探档案</div>'+
+    '<label class="lb">侦探昵称</label>'+
+    '<input class="input" id="nickInput" type="text" maxlength="12" placeholder="输入你的昵称（最多12字）" value="'+esc(state.profile.nickname||'')+'">'+
+    '<div style="height:12px"></div>'+
+    '<label class="lb">选择头像</label>'+
+    '<div class="avatar-row">'+avHTML+'</div>'+
+    '<div style="height:12px"></div>'+
+    '<div class="split">'+
+      '<div><label class="lb">班级</label>'+
+        '<select class="input" id="classSel">'+
+          ['初三(1)班','初三(2)班','初三(3)班','初三(4)班','初二(1)班','初二(2)班'].map(function(c){
+            return '<option value="'+c+'"'+(state.profile.className===c?' selected':'')+'>'+c+'</option>';
+          }).join('')+
+        '</select>'+
+      '</div>'+
+      '<div><label class="lb">年级</label>'+
+        '<select class="input" id="gradeSel">'+
+          ['九年级','八年级'].map(function(g){
+            return '<option value="'+g+'"'+(state.profile.grade===g?' selected':'')+'>'+g+'</option>';
+          }).join('')+
+        '</select>'+
+      '</div>'+
+    '</div>'+
+    '<div style="height:14px"></div>'+
+    '<button type="button" class="btn primary full" data-action="saveProfile">💾 保存档案并进入游戏</button>'+
+    '<div class="tiny" style="margin-top:8px;text-align:center">连续登录第 '+ (state.streakDays||0) +' 天　·　当前积分 '+state.totalScore+'　·　正确率 '+acc+'%　·　徽章 '+bCnt+'/13　·　错题 '+wb+'</div>'+
+  '</div>'+
+
+  '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>选择模式</div>'+
+    '<div class="mode-grid">'+
+      '<div class="mode-btn" data-action="go" data-v="levels">'+
+        '<div class="mt">🎯 闯关模式</div>'+
+        '<div class="md">6 大关卡，覆盖电路基础到故障排查，每关 10—15 分钟</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="startTimed">'+
+        '<div class="mt">⏱️ 限时挑战</div>'+
+        '<div class="md">60 秒随机答题，答对得分，答错不扣分但连击清零</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="startWrong">'+
+        '<div class="mt">📕 错题重练</div>'+
+        '<div class="md">自动收录答错的题目，反复练习直到掌握</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="startFault">'+
+        '<div class="mt">🔍 故障排查</div>'+
+        '<div class="md">根据电路现象判断故障位置与原因，实战中考高频题型</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="go" data-v="leaderboard">'+
+        '<div class="mt">🏆 排行榜</div>'+
+        '<div class="md">班级榜 / 年级榜 / 周榜 / 总榜</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="go" data-v="badges">'+
+        '<div class="mt">🏅 徽章墙</div>'+
+        '<div class="md">13 枚徽章，自动发放，可在个人主页展示</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="go" data-v="profile">'+
+        '<div class="mt">👤 个人主页</div>'+
+        '<div class="md">查看战绩、设置音效、导出存档</div>'+
+      '</div>'+
+      '<div class="mode-btn" data-action="go" data-v="teacher">'+
+        '<div class="mt">🧑‍🏫 教师后台</div>'+
+        '<div class="md">导入题库、调整分值、修改答案、导出成绩</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="tiny" style="text-align:center;padding:6px 0 20px">数据保存在本机浏览器 localStorage 中，可随时导出备份。</div>';
+}
+
+/* ---------- 13. 关卡列表 ---------- */
+function viewLevels(){
+  var html = '<div class="card"><div class="card-title"><span class="dot"></span>闯关模式 · 六大关卡</div>'+
+    '<div class="muted">完成一整关 +20 分，单关全对再 +30 分。</div></div>';
+
+  LEVELS.forEach(function(lv){
+    var qs = getLevelQuestions(lv.id);
+    var full = qs.reduce(function(s,q){ return s+q.score; }, 0);
+    var best = state.levelBest[lv.id] || { score:0, full:full };
+    var done = best.score >= full && full > 0;
+    html += '<div class="level-item" data-action="openLevel" data-v="'+lv.id+'">'+
+      '<div class="num">'+lv.num+'</div>'+
+      '<div style="min-width:0;flex:1">'+
+        '<div class="li-t">'+esc(lv.name)+'</div>'+
+        '<div class="li-d">'+esc(lv.desc)+'</div>'+
+      '</div>'+
+      '<div class="li-r"><b>'+(best.score||0)+'</b>满分 '+full+'　'+(done?'✅':'')+'<br>'+qs.length+' 题</div>'+
+    '</div>';
+  });
+
+  html += '<button type="button" class="btn ghost full" data-action="go" data-v="home">← 返回首页</button>';
+  return html;
+}
+
+function viewLevelDetail(){
+  var lv = LEVELS.filter(function(x){ return x.id === ui.curLevel; })[0];
+  if(!lv) return '<div class="card">关卡不存在</div>';
+  var qs = getLevelQuestions(lv.id);
+  var full = qs.reduce(function(s,q){ return s+q.score; }, 0);
+
+  var html = '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>第'+lv.num+'关 · '+esc(lv.name)+'</div>'+
+    '<div class="muted">'+esc(lv.desc)+'</div>'+
+    '<div style="margin-top:12px" class="btn-row">'+
+      '<button type="button" class="btn primary" data-action="startLevel" data-v="'+lv.id+'">▶ 开始闯关（'+qs.length+' 题 · 满分 '+full+'）</button>'+
+      '<button type="button" class="btn ghost" data-action="go" data-v="levels">← 返回关卡列表</button>'+
+    '</div>'+
+  '</div>';
+
+  html += '<div class="card"><div class="card-title"><span class="dot"></span>本关题目预览</div>';
+  qs.forEach(function(q, i){
+    html += '<div class="wrong-item">'+
+      '<div style="font-size:13.5px;line-height:1.6;color:#cbd5e1">'+(i+1)+'. '+esc(String(q.stem).split('\n')[0].slice(0,52))+'…</div>'+
+      '<div class="wi-m" style="margin-top:6px">'+
+        '<span class="tag type">'+typeLabel(q.type)+'</span>'+
+        '<span class="tag '+diffClass(q.difficulty)+'">'+q.difficulty+'</span>'+
+        '<span class="tag k">'+esc(q.knowledge)+'</span>'+
+        '<span class="tiny">'+q.score+' 分</span>'+
+      '</div>'+
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+/* ---------- 14. 答题视图 ---------- */
+function viewQuiz(){
+  if(!quiz) return '<div class="card">没有进行中的答题。 <button type="button" class="btn" data-action="go" data-v="home">返回首页</button></div>';
+  var q = quiz.qs[quiz.idx];
+  if(!q) return '<div class="card">题目加载异常。<button type="button" class="btn" data-action="go" data-v="home">返回首页</button></div>';
+
+  var total = quiz.qs.length;
+  var pct = Math.round((quiz.idx)/total*100);
+  var modeName = ({level:'闯关模式', timed:'限时挑战', wrong:'错题重练', fault:'故障排查'})[quiz.mode] || '答题';
+  var lvName = quiz.mode === 'level' && ui.curLevelLv ? ui.curLevelLv.name : modeName;
+
+  var html = ''+
+  '<div class="card">'+
+    '<div class="bar">'+
+      '<span>📖 '+esc(modeName)+' · '+esc(lvName)+'</span>'+
+      (quiz.mode === 'timed'
+        ? '<span>⏱️ 剩余 <b id="timerDisplay" style="color:#fde047">'+Math.max(0,quiz.timeLeft)+'</b> 秒</span>'
+        : '<span>第 '+(quiz.idx+1)+' / '+total+' 题</span>')+
+      '<span>🔥 连击 <b style="color:#fde047">'+quiz.combo+'</b>　⭐ 本局 <b style="color:#86efac">'+quiz.score+'</b></span>'+
+    '</div>'+
+    '<div class="progress"><i style="width:'+pct+'%"></i></div>'+
+
+    '<div class="qhead">'+
+      '<span class="tag type">'+typeLabel(q.type)+'</span>'+
+      '<span class="tag '+diffClass(q.difficulty)+'">'+q.difficulty+' · '+q.score+'分</span>'+
+      '<span class="tag k">'+esc(q.knowledge)+'</span>'+
+    '</div>'+
+
+    '<div class="qstem">'+esc(q.stem).replace(/\n/g,'<br>')+'</div>'+
+    renderFigure(q)+
+    renderAnswerArea(q)+
+    renderResultBox(q)+
+
+    '<div style="height:14px"></div>'+
+    '<div class="btn-row">'+
+      (quiz.submitted
+        ? '<button type="button" class="btn primary" data-action="nextQ">'+(quiz.idx+1>=quiz.qs.length?'查看结算 →':'下一题 →')+'</button>'
+        : '<button type="button" class="btn primary" data-action="submitQ"'+(quiz.submitting?' disabled':'')+'>'+(quiz.submitting?'提交中…':'✅ 提交答案')+'</button>')+
+      (!quiz.submitted && !quiz.usedHint
+        ? '<button type="button" class="btn purple sm" data-action="useHint">💡 使用提示（本题积分减半）</button>'
+        : '')+
+      '<button type="button" class="btn ghost sm" data-action="goFeedback">📣 答案有误</button>'+
+      '<button type="button" class="btn ghost sm" data-action="quitQuiz">✖ 退出</button>'+
+    '</div>'+
+  '</div>';
+  return html;
+}
+
+function renderFigure(q){
+  if(!q.figure) return '';
+  var inner = '';
+  if(q.figure === 'AMMETER')      inner = ammeterSVG();
+  else if(q.figure === 'UIGRAPH') inner = uiGraphSVG();
+  else if(q.figure === 'CIRCUIT') inner = circuitSVG();
+  if(!inner) return '';
+  return '<div class="figure-box">'+inner+'</div>';
+}
+
+function renderAnswerArea(q){
+  var disabled = !!quiz.submitted;
+  var h = '';
+
+  /* ---- 单选 / 多选 ---- */
+  if(q.kind === 'choice' || q.kind === 'multi'){
+    var opts = q.options || [];
+    h += '<div style="margin-top:14px" id="optWrap">';
+    opts.forEach(function(o){
+      var cls = 'option';
+      if(!disabled){
+        if(q.kind === 'choice'){
+          if(quiz.selected === o.k) cls += ' sel';
+        }else{
+          if(quiz.multiSelected.indexOf(o.k) >= 0) cls += ' sel';
+        }
+      }else{
+        var isAns = (q.kind === 'choice')
+          ? (q.answer === o.k)
+          : (q.answer.indexOf(o.k) >= 0);
+        var isPicked = (q.kind === 'choice')
+          ? (quiz.selected === o.k)
+          : (quiz.multiSelected.indexOf(o.k) >= 0);
+        if(isAns) cls += ' ok';
+        else if(isPicked) cls += ' bad';
+        cls += ' dis';
+      }
+      h += '<div class="'+cls+'" data-action="pickOpt" data-v="'+esc(o.k)+'">'+
+             '<span class="k">'+esc(o.k)+'</span><span>'+esc(o.t)+'</span>'+
+           '</div>';
+    });
+    h += '</div>';
+    if(!disabled && q.kind === 'multi'){
+      h += '<div class="tiny">多选题，请选出所有正确选项后再提交（选项可多选）。</div>';
+    }
+    return h;
+  }
+
+  /* ---- 判断 ---- */
+  if(q.kind === 'judge'){
+    var mk = function(key, label){
+      var cls = 'option';
+      if(!disabled){
+        if(quiz.selected === key) cls += ' sel';
+      }else{
+        var isCorrect = (key === 'T') === q.answer;
+        var isPicked = (quiz.selected === key);
+        if(isCorrect) cls += ' ok';
+        else if(isPicked) cls += ' bad';
+        cls += ' dis';
+      }
+      return '<div class="'+cls+'" data-action="pickOpt" data-v="'+key+'" style="flex:1;justify-content:center">'+
+               '<span class="k">'+(key==='T'?'√':'×')+'</span><span>'+label+'</span></div>';
+    };
+    h += '<div style="margin-top:14px;display:flex;gap:10px">'+ mk('T','正确') + mk('F','错误') +'</div>';
+    return h;
+  }
+
+  /* ---- 计算题：数值 + 单位下拉 ---- */
+  if(q.type === 'calc'){
+    var uOpts = q.unitOptions || ['V','A','Ω','W','J'];
+    var curUnit = quiz.calcUnit || uOpts[0];
+    h += '<div style="margin-top:14px">'+
+      '<label class="lb">填写数值并选择单位</label>'+
+      '<div class="fill-row">'+
+        '<input class="input" id="calcInput" type="text" inputmode="decimal" placeholder="输入数值，例如 6" value="'+esc(quiz.calcValue||'')+'"'+(disabled?' disabled':'')+'>'+
+        '<select class="input" id="calcUnit" style="flex:0 0 110px"'+(!disabled?'':' disabled')+'>'+
+          uOpts.map(function(u){ return '<option value="'+esc(u)+'"'+(u===curUnit?' selected':'')+'>'+esc(u)+'</option>'; }).join('')+
+        '</select>'+
+      '</div>'+
+      '<div class="tiny" style="margin-top:6px">只需填数值，单位在右侧下拉框中选择。</div>'+
+    '</div>';
+    return h;
+  }
+
+  /* ---- 填空 / 读数 ---- */
+  var placeholder = '输入答案';
+  if(q.type === 'reading') placeholder = '例如 0.24A（数值+单位）';
+  h += '<div style="margin-top:14px">'+
+    '<label class="lb">'+(q.type==='reading'?'读出示数（数值+单位）':'填写答案')+'</label>'+
+    '<div class="fill-row">'+
+      '<input class="input" id="textInput" type="text" placeholder="'+placeholder+'" value="'+esc(quiz.textAnswer||'')+'"'+(disabled?' disabled':'')+' autocomplete="off">'+
+      (q.unit ? '<span class="unit-inline">单位参考：'+esc(q.unit)+'</span>' : '')+
+    '</div>'+
+    '<div class="tiny" style="margin-top:6px">系统会自动忽略空格、换行和常见标点；数值 0.5 与 0.50 视为相同，但单位写错会判错。</div>'+
+  '</div>';
+  return h;
+}
+
+function renderResultBox(q){
+  if(!quiz.submitted || !quiz.lastJudge) return '';
+  var j = quiz.lastJudge;
+  var stdAns = stdAnswerText(q);
+  var h = '<div class="result-box '+(j.ok?'ok':'bad')+'">';
+  h += '<div class="rb-head"><span class="ico">'+(j.ok?'✓':'✕')+'</span>'+
+       '<span>'+(j.ok?'答对啦！':'答错了')+'</span>'+
+       '<span class="tiny" style="margin-left:auto">'+(j.ok?('本题 +'+quiz.lastGain+' 分'):'答错不扣分，已加入错题本')+'</span></div>';
+
+  h += '<div class="ans-line">✅ 标准答案：<b>'+esc(stdAns)+'</b>';
+  if(!j.ok && j.userText){
+    h += '　<span class="tiny">你的作答：'+esc(j.userText)+'</span>';
+  }
+  h += '</div>';
+
+  if(!j.ok && j.tip){
+    h += '<div class="ans-line" style="border-color:rgba(239,68,68,.4)">⚠️ '+esc(j.tip)+'</div>';
+  }
+
+  h += '<div class="sec"><div class="sh">📘 解析</div><div class="sb">'+esc(q.explain).replace(/\n/g,'<br>')+'</div></div>';
+  if(q.formula){
+    h += '<div class="sec formula"><div class="sh">🧮 公式</div><div class="sb">'+esc(q.formula)+'</div></div>';
+  }
+  if(q.pitfall){
+    h += '<div class="sec pit"><div class="sh">⚠️ 易错点</div><div class="sb">'+esc(q.pitfall)+'</div></div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function stdAnswerText(q){
+  if(q.kind === 'choice'){
+    var o = (q.options||[]).filter(function(x){ return x.k === q.answer; })[0];
+    return q.answer + (o ? '. ' + o.t : '');
+  }
+  if(q.kind === 'multi'){
+    return q.answer.slice().sort().join('、');
+  }
+  if(q.kind === 'judge'){
+    return q.answer ? '正确' : '错误';
+  }
+  if(q.answerNum !== undefined){
+    var val = q.answerNum;
+    var s = (Math.round(val*1e6)/1e6).toString();
+    return s + (q.unit || '');
+  }
+  return String(q.answer);
+}
+
+/* ---------- 15. 答题流程 ---------- */
+function buildQuizQuestions(ids){
+  return ids.map(function(id){ return getQ(id); }).filter(Boolean);
+}
+function shuffle(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var t = a[i]; a[i]=a[j]; a[j]=t;
+  }
+  return a;
+}
+
+function startQuiz(mode, opts){
+  opts = opts || {};
+  var qs = [];
+  var title = '';
+
+  if(mode === 'level'){
+    var lv = LEVELS.filter(function(x){ return x.id === opts.levelId; })[0];
+    if(!lv) { toast('关卡不存在'); return; }
+    ui.curLevel = lv.id;
+    ui.curLevelLv = lv;
+    qs = buildQuizQuestions(getLevelQuestions(lv.id).map(function(q){ return q.id; }));
+    title = '第'+lv.num+'关 · '+lv.name;
+  } else if(mode === 'timed'){
+    qs = buildQuizQuestions(shuffle(QUESTIONS.map(function(q){ return q.id; })).slice(0, 30));
+    title = '限时挑战 60 秒';
+  } else if(mode === 'wrong'){
+    var ids = Object.keys(state.wrongBook || {});
+    if(!ids.length){ toast('错题本是空的，先去闯关吧！'); return; }
+    qs = buildQuizQuestions(shuffle(ids));
+    title = '错题重练';
+  } else if(mode === 'fault'){
+    var fids = QUESTIONS.filter(function(q){ return q.type === 'fault'; }).map(function(q){ return q.id; });
+    qs = buildQuizQuestions(shuffle(fids));
+    title = '故障排查';
+  }
+
+  if(!qs.length){ toast('没有可用题目'); return; }
+
+  quiz = {
+    mode: mode,
+    title: title,
+    levelId: opts.levelId || null,
+    qs: qs,
+    idx: 0,
+    combo: 0,
+    maxCombo: 0,
+    score: 0,
+    correct: 0,
+    answered: 0,
+    perfect: true,
+    totalTimeMs: 0,
+    qStartTime: Date.now(),
+    selected: null,
+    multiSelected: [],
+    textAnswer: '',
+    calcValue: '',
+    calcUnit: '',
+    submitted: false,
+    submitting: false,
+    usedHint: false,
+    lastJudge: null,
+    lastGain: 0,
+    timeLeft: 60,
+    timerId: null,
+    finished: false
+  };
+  quizToken++;
+  ui.screen = 'quiz';
+  sfxClick();
+  render();
+
+  if(mode === 'timed'){
+    startTimer();
+  }
+}
+
+function startTimer(){
+  if(!quiz || quiz.timerId) return;
+  quiz.timerId = setInterval(function(){
+    if(!quiz || quiz.finished){
+      clearInterval(quiz.timerId);
+      return;
+    }
+    quiz.timeLeft--;
+    var t = $('#timerDisplay');
+    if(t) t.textContent = Math.max(0, quiz.timeLeft);
+    if(quiz.timeLeft <= 0){
+      clearInterval(quiz.timerId);
+      quiz.timerId = null;
+      toast('时间到！');
+      finishQuiz();
+    }
+  }, 1000);
+}
+function stopTimer(){
+  if(quiz && quiz.timerId){
+    clearInterval(quiz.timerId);
+    quiz.timerId = null;
+  }
+}
+
+function resetQuestionInputs(){
+  quiz.selected = null;
+  quiz.multiSelected = [];
+  quiz.textAnswer = '';
+  quiz.calcValue = '';
+  quiz.calcUnit = '';
+  quiz.submitted = false;
+  quiz.submitting = false;
+  quiz.usedHint = false;
+  quiz.lastJudge = null;
+  quiz.lastGain = 0;
+  quiz.qStartTime = Date.now();
+}
+
+function pickOption(key){
+  if(!quiz || quiz.submitted) return;
+  var q = quiz.qs[quiz.idx];
+  if(!q) return;
+  if(q.kind === 'choice'){
+    quiz.selected = key;
+    sfxClick();
+  } else if(q.kind === 'judge'){
+    quiz.selected = key;
+    sfxClick();
+  } else if(q.kind === 'multi'){
+    var i = quiz.multiSelected.indexOf(key);
+    if(i >= 0) quiz.multiSelected.splice(i,1);
+    else quiz.multiSelected.push(key);
+    sfxClick();
+  }
+  var sc = window.pageYOffset || document.documentElement.scrollTop;
+  renderView();
+  window.scrollTo(0, sc);
+}
+
+function submitAnswer(){
+  if(!quiz || quiz.submitted || quiz.submitting) return;
+  var q = quiz.qs[quiz.idx];
+  if(!q) return;
+
+  /* --- 取值与校验 --- */
+  var userText = '';
+  var userValue = null;
+
+  if(q.kind === 'choice'){
+    if(!quiz.selected){ toast('请先选择一个选项'); return; }
+    userValue = quiz.selected;
+    userText = quiz.selected;
+  } else if(q.kind === 'multi'){
+    if(!quiz.multiSelected.length){ toast('请至少选择一个选项'); return; }
+    userValue = quiz.multiSelected.slice().sort();
+    userText = userValue.join('、');
+  } else if(q.kind === 'judge'){
+    if(!quiz.selected){ toast('请选择"正确"或"错误"'); return; }
+    userValue = quiz.selected === 'T';
+    userText = quiz.selected === 'T' ? '正确' : '错误';
+  } else if(q.type === 'calc'){
+    var cv = (quiz.calcValue||'').trim();
+    if(!cv){ toast('请先填写数值'); return; }
+    var cu = quiz.calcUnit || ((q.unitOptions||['V'])[0]);
+    userText = cv + cu;
+    userValue = cv + cu;
+  } else {
+    var tv = (quiz.textAnswer||'').trim();
+    if(!tv){ toast('请先填写答案'); return; }
+    userText = tv;
+    userValue = tv;
+  }
+
+  /* --- 提交中状态（防重复提交） --- */
+  quiz.submitting = true;
+  renderView();
+
+  var token = quizToken;
+  setTimeout(function(){
+    if(!quiz || token !== quizToken) return;
+    quiz.submitting = false;
+    doJudge(q, userValue, userText);
+  }, 180);
+}
+
+function doJudge(q, userValue, userText){
+  var ok = false;
+  var tip = '';
+
+  if(q.kind === 'choice'){
+    ok = (userValue === q.answer);
+  } else if(q.kind === 'multi'){
+    ok = sameKeySet(userValue, q.answer);
+    if(!ok){
+      var miss = q.answer.filter(function(k){ return userValue.indexOf(k) < 0; });
+      var extra = userValue.filter(function(k){ return q.answer.indexOf(k) < 0; });
+      var parts = [];
+      if(miss.length) parts.push('漏选：'+miss.join('、'));
+      if(extra.length) parts.push('多选/错选：'+extra.join('、'));
+      tip = parts.join('；');
+    }
+  } else if(q.kind === 'judge'){
+    ok = (userValue === q.answer);
+  } else if(q.type === 'calc'){
+    // 数值与单位分开判断
+    var parsed = parseNumericInput(userValue);
+    var target = Number(q.answerNum);
+    var tol = Math.max(1e-9, Math.abs(target)*1e-6);
+    var numOk = parsed && Math.abs(parsed.value - target) <= tol;
+    var unitOk = parsed && unitsEqual(parsed.unit, q.unit);
+    ok = !!(numOk && unitOk);
+    if(!ok){
+      if(!numOk && !unitOk) tip = '数值和单位都不正确。正确单位应为 '+q.unit;
+      else if(!numOk) tip = '单位选对了，但数值不对。';
+      else tip = '数值对啦，但单位选错了，正确单位是 '+q.unit+'。';
+    }
+  } else {
+    var res = judgeNumeric(q, userText);
+    ok = res.ok;
+    if(!ok) tip = res.msg || '答案不正确，请对照标准答案检查。';
+  }
+
+  /* --- 计分 --- */
+  var elapsedMs = Date.now() - quiz.qStartTime;
+  var elapsedSec = elapsedMs / 1000;
+  var gain = 0;
+  var firstTime = !state.firstCorrect[q.id];
+
+  if(ok){
+    quiz.correct++;
+    quiz.combo++;
+    if(quiz.combo > quiz.maxCombo) quiz.maxCombo = quiz.combo;
+
+    var base = q.score;
+    var speedBonus = 0;
+    if(elapsedSec <= 5) speedBonus = 5;
+    else if(elapsedSec <= 10) speedBonus = 3;
+
+    var comboBonus = 0;
+    if(quiz.combo === 3) comboBonus = 5;
+    else if(quiz.combo === 5) comboBonus = 10;
+    else if(quiz.combo >= 8) comboBonus = 20;
+
+    gain = base + speedBonus + comboBonus;
+    if(!firstTime) gain = Math.max(1, Math.round(gain * 0.5));  // 重复作答得分减半
+    if(quiz.usedHint) gain = Math.round(gain / 2);              // 使用提示后积分减半
+    quiz.score += gain;
+
+    sfxCorrect();
+  } else {
+    quiz.combo = 0;
+    quiz.perfect = false;
+    gain = 0;
+    sfxWrong();
+    // 加入错题本
+    if(!state.wrongBook[q.id]) state.wrongBook[q.id] = { wrongCount:0, lastTime:0 };
+    state.wrongBook[q.id].wrongCount++;
+    state.wrongBook[q.id].lastTime = Date.now();
+  }
+
+  quiz.answered++;
+
+  /* --- 全局统计 --- */
+  state.answered++;
+  state.totalTimeMs += elapsedMs;
+  if(ok){ state.correct++; state.totalScore += gain; }
+  state.firstCorrect[q.id] = state.firstCorrect[q.id] || ok;
+
+  if(!state.qLog[q.id]) state.qLog[q.id] = { correct:0, wrong:0 };
+  if(ok) state.qLog[q.id].correct++; else state.qLog[q.id].wrong++;
+
+  // 按题型
+  if(!state.typeStats[q.type]) state.typeStats[q.type] = { correct:0, total:0 };
+  state.typeStats[q.type].total++;
+  if(ok) state.typeStats[q.type].correct++;
+
+  // 按知识点
+  if(!state.knowledgeStats[q.knowledge]) state.knowledgeStats[q.knowledge] = { correct:0, total:0 };
+  state.knowledgeStats[q.knowledge].total++;
+  if(ok) state.knowledgeStats[q.knowledge].correct++;
+
+  // 故障连续答对 streak
+  if(q.type === 'fault'){
+    state._faultStreak = ok ? ((state._faultStreak||0) + 1) : 0;
+  }
+
+  // 最高连击（全局）
+  if(quiz.maxCombo > state.maxCombo) state.maxCombo = quiz.maxCombo;
+
+  // 错题重练答对 → 移出错题本
+  if(quiz.mode === 'wrong' && ok && state.wrongBook[q.id]){
+    delete state.wrongBook[q.id];
+    tip = tip || '太棒了，这道题已从错题本移出！';
+  }
+  // 提升到全局错题本的题目再次答对 2 次也移出
+  if(ok && state.wrongBook[q.id] && state.qLog[q.id].correct >= 2 && quiz.mode !== 'wrong'){
+    delete state.wrongBook[q.id];
+  }
+
+  state.totalScore = Math.max(0, state.totalScore);
+  quiz.lastJudge = { ok: ok, tip: tip, userText: userTextTextSafe(userText) };
+  quiz.lastGain = gain;
+  quiz.submitted = true;
+
+  saveState();
+  checkBadges();
+  renderView();
+  var sc = window.pageYOffset || document.documentElement.scrollTop;
+  window.scrollTo(0, sc);
+}
+function userTextTextSafe(t){
+  t = String(t === null || t === undefined ? '' : t);
+  return t.length > 60 ? t.slice(0,60) + '…' : t;
+}
+
+function nextQuestion(){
+  if(!quiz || !quiz.submitted) return;
+  if(quiz.idx + 1 >= quiz.qs.length){
+    finishQuiz();
+    return;
+  }
+  quiz.idx++;
+  resetQuestionInputs();
+  renderView();
+  window.scrollTo(0, 0);
+}
+
+function finishQuiz(){
+  if(!quiz || quiz.finished) return;
+  quiz.finished = true;
+  stopTimer();
+
+  var completeBonus = 0;
+  var perfectBonus = 0;
+  var full = quiz.qs.reduce(function(s,q){ return s + q.score; }, 0);
+
+  if(quiz.mode === 'level' && quiz.levelId){
+    var lb = state.levelBest[quiz.levelId] || { score:0, full:full, completed:false };
+    var firstComplete = !lb.completed;
+
+    if(firstComplete){
+      completeBonus = 20;
+      state.totalScore += completeBonus;
+      lb.completed = true;
+    }
+    // 更新最佳成绩
+    lb.full = full;
+    lb.bestThisRun = quiz.score;
+    lb.score = Math.max(lb.score || 0, quiz.score);
+    state.levelBest[quiz.levelId] = lb;
+
+    // 单关满分
+    if(quiz.correct === quiz.qs.length && quiz.qs.length > 0 && !lb.gotPerfect){
+      perfectBonus = 30;
+      state.totalScore += perfectBonus;
+      lb.gotPerfect = true;
+      state.levelBest[quiz.levelId] = lb;
+    }
+  }
+
+  state.totalScore += quiz.score;
+  saveState();
+
+  quiz.completeBonus = completeBonus;
+  quiz.perfectBonus = perfectBonus;
+  quiz.full = full;
+
+  checkBadges();
+  ui.screen = 'result';
+  renderView();
+  window.scrollTo(0, 0);
+}
+
+function quitQuiz(){
+  stopTimer();
+  quizToken++;
+  quiz = null;
+  ui.screen = 'home';
+  render();
+}
+
+/* ---------- 16. 结算页 ---------- */
+function viewResult(){
+  if(!quiz) return '<div class="card">没有结算数据。<button type="button" class="btn" data-action="go" data-v="home">返回首页</button></div>';
+  var total = quiz.qs.length;
+  var acc = total ? Math.round(quiz.correct/total*100) : 0;
+  var isFull = quiz.correct === total && total > 0;
+  var rankText = isFull ? '🏆 完美通关！' : (acc >= 80 ? '🎉 表现优秀！' : (acc >= 60 ? '👍 继续加油！' : '💪 多练几遍就熟了！'));
+
+  var h = '<div class="card" style="text-align:center">'+
+    '<div style="font-size:52px;line-height:1.1">'+(isFull?'🏆':'🎯')+'</div>'+
+    '<h2 style="margin-top:8px;font-size:20px">'+esc(rankText)+'</h2>'+
+    '<div class="muted">'+esc(quiz.title || '答题')+'</div>'+
+  '</div>';
+
+  h += '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>本局战绩</div>'+
+    '<table class="tbl">'+
+      '<tr><td>答对 / 总题数</td><td class="hl">'+quiz.correct+' / '+total+'</td></tr>'+
+      '<tr><td>正确率</td><td class="hl">'+acc+'%</td></tr>'+
+      '<tr><td>最高连击</td><td class="hl">🔥 '+quiz.maxCombo+'</td></tr>'+
+      '<tr><td>本局答题得分</td><td class="hl">'+quiz.score+' 分</td></tr>'+
+      (quiz.completeBonus ? '<tr><td>完成关卡奖励</td><td class="hl">+'+quiz.completeBonus+' 分</td></tr>' : '')+
+      (quiz.perfectBonus  ? '<tr><td>单关满分奖励</td><td class="hl">+'+quiz.perfectBonus+' 分</td></tr>' : '')+
+      '<tr><td>本局总得分</td><td class="hl">'+(quiz.score + (quiz.completeBonus||0) + (quiz.perfectBonus||0))+' 分</td></tr>'+
+      '<tr><td>累计总积分</td><td class="hl">'+state.totalScore+' 分</td></tr>'+
+    '</table>'+
+  '</div>';
+
+  // 本局错题列表
+  var wrongList = quiz.qs.filter(function(q){
+    var lg = state.qLog[q.id];
+    return lg && lg.wrong > 0 && !state.firstCorrect[q.id];
+  });
+  if(wrongList.length){
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>本局需要巩固的题目</div>';
+    wrongList.slice(0,6).forEach(function(q){
+      h += '<div class="wrong-item"><div class="wi-t">'+esc(String(q.stem).split('\n')[0])+'</div>'+
+           '<div class="wi-m"><span class="tag k">'+esc(q.knowledge)+'</span>'+
+           '<span class="tiny">标准答案：'+esc(stdAnswerText(q))+'</span></div></div>';
+    });
+    h += '<button type="button" class="btn pink sm" data-action="startWrong">📕 去错题重练</button></div>';
+  }
+
+  h += '<div class="card"><div class="btn-row">'+
+    '<button type="button" class="btn primary" data-action="go" data-v="home">🏠 返回首页</button>'+
+    (quiz.mode === 'level' && quiz.levelId
+      ? '<button type="button" class="btn purple" data-action="startLevel" data-v="'+quiz.levelId+'">🔁 再挑战一次</button>'
+      : '<button type="button" class="btn purple" data-action="'+(quiz.mode==='timed'?'startTimed':'startFault')+'">🔁 再来一局</button>')+
+    '<button type="button" class="btn ghost" data-action="go" data-v="leaderboard">🏆 看排行榜</button>'+
+    '<button type="button" class="btn ghost" data-action="go" data-v="wrong">📕 错题本</button>'+
+  '</div></div>';
+
+  return h;
+}
+
+/* ---------- 17. 排行榜 ---------- */
+function viewLeaderboard(){
+  var tabs = [
+    { id:'class', name:'班级榜' },
+    { id:'grade', name:'年级榜' },
+    { id:'week',  name:'周榜' },
+    { id:'total', name:'总榜' }
+  ];
+  var list = getLeaderboard(ui.leaderboardTab);
+
+  var h = '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>排行榜</div>'+
+    '<div class="tabs">'+tabs.map(function(t){
+      return '<div class="tab'+(ui.leaderboardTab===t.id?' on':'')+'" data-action="lbTab" data-v="'+t.id+'">'+t.name+'</div>';
+    }).join('')+'</div>'+
+    '<div class="tiny">排序规则：积分高者在前 → 正确率高者在前 → 最高连击高者在前 → 答题用时短者在前。</div>'+
+  '</div>';
+
+  h += '<div class="card">';
+  if(!list.length){
+    h += '<div class="muted">暂无数据。</div>';
+  }else{
+    list.slice(0, 30).forEach(function(p, i){
+      var key = (ui.leaderboardTab === 'week') ? 'weekScore' : 'score';
+      var accPct = Math.round(accuracyOf(p)*100);
+      var medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
+      h += '<div class="rank-row'+(p.isMe?' me':'')+'">'+
+        '<div class="rank-no'+(i<3?' g'+(i+1):'')+'">'+(medal || (i+1))+'</div>'+
+        '<div class="rank-av">'+esc(p.avatar||'👤')+'</div>'+
+        '<div class="rank-info">'+
+          '<div class="rn">'+esc(p.nickname||'匿名')+(p.isMe?' <span class="tag k" style="font-size:10px">我</span>':'')+'</div>'+
+          '<div class="rd">'+esc(p.className||'')+' · 正确率 '+accPct+'% · 最高连击 '+(p.maxCombo||0)+' · 🏅'+(p.badges||0)+'</div>'+
+        '</div>'+
+        '<div class="rank-sc"><b>'+(p[key]||0)+'</b><span>'+(ui.leaderboardTab==='week'?'本周积分':'总积分')+'</span></div>'+
+      '</div>';
+    });
+  }
+  h += '</div>';
+
+  h += '<div class="card"><div class="card-title"><span class="dot"></span>数据管理</div>'+
+    '<div class="btn-row">'+
+      '<button type="button" class="btn sm" data-action="exportData">⬇️ 导出成绩（JSON）</button>'+
+      '<button type="button" class="btn sm" data-action="exportCSV">⬇️ 导出成绩（CSV）</button>'+
+      '<button type="button" class="btn sm" data-action="importData">⬆️ 导入成绩</button>'+
+      '<button type="button" class="btn sm pink" data-action="resetRank">🗑️ 重置排行榜</button>'+
+    '</div>'+
+    '<div class="tiny" style="margin-top:8px">教师可在"教师后台"中查看班级数据与导出成绩单。成绩数据保存在浏览器本地。</div>'+
+  '</div>';
+
+  h += '<button type="button" class="btn ghost full" data-action="go" data-v="home">← 返回首页</button>';
+  return h;
+}
+
+/* ---------- 18. 徽章墙 ---------- */
+function viewBadges(){
+  var got = Object.keys(state.badges||{}).length;
+  var h = '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>徽章墙（'+got+' / '+BADGES.length+'）</div>'+
+    '<div class="progress"><i style="width:'+Math.round(got/BADGES.length*100)+'%"></i></div>'+
+    '<div class="muted">徽章会在满足条件时自动发放，并弹出提示。</div>'+
+  '</div>';
+
+  h += '<div class="card"><div class="badge-grid">';
+  BADGES.forEach(function(b){
+    var on = !!state.badges[b.id];
+    var t = on ? new Date(state.badges[b.id]) : null;
+    h += '<div class="badge '+(on?'on':'off')+'" title="'+esc(b.desc)+'">'+
+      '<div class="bi">'+b.icon+'</div>'+
+      '<div class="bn">'+esc(b.name)+'</div>'+
+      '<div class="bd">'+esc(b.desc)+'</div>'+
+      (on && t ? '<div class="bd" style="color:#86efac">'+t.getFullYear()+'-'+pad2(t.getMonth()+1)+'-'+pad2(t.getDate())+'</div>' : '<div class="bd">未解锁</div>')+
+    '</div>';
+  });
+  h += '</div></div>';
+
+  h += '<button type="button" class="btn ghost full" data-action="go" data-v="home">← 返回首页</button>';
+  return h;
+}
+
+/* ---------- 19. 错题本 ---------- */
+function viewWrong(){
+  var ids = Object.keys(state.wrongBook || {});
+  var h = '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>错题本（'+ids.length+' 题）</div>'+
+    '<div class="muted">答错的题目会自动收录。在"错题重练"中答对，题目会自动移出。</div>';
+
+  if(ids.length){
+    h += '<div style="margin-top:12px" class="btn-row">'+
+      '<button type="button" class="btn primary" data-action="startWrong">📕 开始错题重练</button>'+
+    '</div>';
+  }
+  h += '</div>';
+
+  if(!ids.length){
+    h += '<div class="card"><div class="muted" style="text-align:center;padding:24px 0">目前没有错题，继续保持！ 🎉</div></div>';
+  } else {
+    h += '<div class="card">';
+    ids.forEach(function(id, i){
+      var q = getQ(id);
+      if(!q) return;
+      var wb = state.wrongBook[id];
+      h += '<div class="wrong-item">'+
+        '<div class="wi-t">'+(i+1)+'. '+esc(String(q.stem).split('\n')[0])+'</div>'+
+        '<div class="wi-m">'+
+          '<span class="tag type">'+typeLabel(q.type)+'</span>'+
+          '<span class="tag '+diffClass(q.difficulty)+'">'+q.difficulty+'</span>'+
+          '<span class="tag k">'+esc(q.knowledge)+'</span>'+
+          '<span class="tiny">错 '+(wb.wrongCount||1)+' 次</span>'+
+          '<button type="button" class="btn sm ghost" data-action="viewAnswer" data-v="'+esc(id)+'">看答案</button>'+
+        '</div>'+
+        '<div class="ans-line" id="ans_'+esc(id)+'" style="display:none;margin-top:8px">'+
+          '<b>标准答案：'+esc(stdAnswerText(q))+'</b><br>'+esc(q.explain).replace(/\n/g,'<br>')+
+        '</div>'+
+      '</div>';
+    });
+    h += '</div>';
+  }
+
+  h += '<button type="button" class="btn ghost full" data-action="go" data-v="home">← 返回首页</button>';
+  return h;
+}
+
+/* ---------- 20. 个人主页 ---------- */
+function viewProfile(){
+  var acc = state.answered ? Math.round(state.correct/state.answered*100) : 0;
+  var got = Object.keys(state.badges||{}).length;
+  var wb = Object.keys(state.wrongBook||{}).length;
+  var avgSec = state.answered ? (state.totalTimeMs/1000/state.answered).toFixed(1) : '0.0';
+
+  var typeRows = '';
+  var order = ['single','multi','judge','fill','reading','calc','fault','image','order','connect'];
+  order.forEach(function(t){
+    var s = state.typeStats[t];
+    if(!s || !s.total) return;
+    var pa = Math.round(s.correct/s.total*100);
+    typeRows += '<tr><td>'+typeLabel(t)+'</td><td>'+s.total+'</td><td class="hl">'+pa+'%</td></tr>';
+  });
+  if(!typeRows) typeRows = '<tr><td colspan="3" class="tiny">暂无作答记录</td></tr>';
+
+  var h = '<div class="card" style="text-align:center">'+
+    '<div style="font-size:52px;line-height:1.1">'+esc(state.profile.avatar||'🕵️')+'</div>'+
+    '<h2 style="margin-top:8px;font-size:19px">'+esc(state.profile.nickname || '未命名侦探')+'</h2>'+
+    '<div class="muted">'+esc(state.profile.className||'')+' · '+esc(state.profile.grade||'')+'</div>'+
+  '</div>';
+
+  h += '<div class="card"><div class="card-title"><span class="dot"></span>战绩总览</div>'+
+    '<table class="tbl">'+
+      '<tr><td>总积分</td><td class="hl">'+state.totalScore+' 分</td></tr>'+
+      '<tr><td>本周积分</td><td class="hl">'+Math.max(0, state.totalScore - (state.weekBaseline||0))+' 分</td></tr>'+
+      '<tr><td>累计作答</td><td>'+state.answered+' 题</td></tr>'+
+      '<tr><td>答对题数</td><td>'+state.correct+' 题</td></tr>'+
+      '<tr><td>正确率</td><td class="hl">'+acc+'%</td></tr>'+
+      '<tr><td>最高连击</td><td class="hl">🔥 '+state.maxCombo+'</td></tr>'+
+      '<tr><td>平均每题用时</td><td>'+avgSec+' 秒</td></tr>'+
+      '<tr><td>获得徽章</td><td class="hl">🏅 '+got+' / '+BADGES.length+'</td></tr>'+
+      '<tr><td>错题本</td><td>'+wb+' 题</td></tr>'+
+      '<tr><td>连续登录</td><td>'+state.streakDays+' 天</td></tr>'+
+    '</table>'+
+  '</div>';
+
+  h += '<div class="card"><div class="card-title"><span class="dot"></span>各题型正确率</div>'+
+    '<table class="tbl"><tr><th>题型</th><th>作答</th><th>正确率</th></tr>'+typeRows+'</table></div>';
+
+  h += '<div class="card"><div class="card-title"><span class="dot"></span>我的徽章</div>'+
+    '<div class="badge-grid">';
+  BADGES.forEach(function(b){
+    var on = !!state.badges[b.id];
+    h += '<div class="badge '+(on?'on':'off')+'"><div class="bi">'+b.icon+'</div><div class="bn">'+esc(b.name)+'</div></div>';
+  });
+  h += '</div></div>';
+
+  h += '<div class="card"><div class="card-title"><span class="dot"></span>设置</div>'+
+    '<div class="btn-row">'+
+      '<button type="button" class="btn sm '+(state.settings.sound?'primary':'ghost')+'" data-action="toggleSound">'+(state.settings.sound?'🔊 音效：开':'🔇 音效：关')+'</button>'+
+      '<button type="button" class="btn sm" data-action="exportData">⬇️ 导出存档</button>'+
+      '<button type="button" class="btn sm" data-action="importData">⬆️ 导入存档</button>'+
+      '<button type="button" class="btn sm pink" data-action="resetAll">⚠️ 清空所有数据</button>'+
+    '</div>'+
+    '<div class="tiny" style="margin-top:8px">存档保存在本机浏览器 localStorage 中。更换设备或清理浏览器数据前，请先导出备份。</div>'+
+  '</div>';
+
+  h += '<button type="button" class="btn ghost full" data-action="go" data-v="home">← 返回首页</button>';
+  return h;
+}
+
+/* ---------- 21. 教师后台 ---------- */
+function viewTeacher(){
+  var tabs = [
+    { id:'bank',    name:'题库总览' },
+    { id:'answer',  name:'修改标准答案' },
+    { id:'config',  name:'关卡与分值' },
+    { id:'class',   name:'班级数据' },
+    { id:'feedback',name:'答案反馈' }
+  ];
+  var h = '<div class="card">'+
+    '<div class="card-title"><span class="dot"></span>教师后台</div>'+
+    '<div class="tabs">'+tabs.map(function(t){
+      return '<div class="tab'+(ui.teacherTab===t.id?' on':'')+'" data-action="tTab" data-v="'+t.id+'">'+t.name+'</div>';
+    }).join('')+'</div>'+
+  '</div>';
+
+  if(ui.teacherTab === 'bank'){
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>题库总览（共 '+QUESTIONS.length+' 题）</div>'+
+      '<div class="tiny" style="margin-bottom:8px">按关卡分组。点击"改答案"可修改标准答案，点击"改分值"可调整分值。</div>'+
+      '<div style="max-height:420px;overflow:auto">';
+    LEVELS.forEach(function(lv){
+      var qs = QUESTIONS.filter(function(q){ return q.level === lv.id; });
+      h += '<div style="margin:10px 0 4px;color:#7dd3fc;font-weight:800;font-size:13px">第'+lv.num+'关 · '+esc(lv.name)+'（满分 '+qs.reduce(function(s,q){return s+q.score;},0)+'）</div>';
+      qs.forEach(function(q){
+        var cur = getQ(q.id);
+        var edited = state.bankEdits[q.id] ? ' <span class="tag hard" style="font-size:10px">已修改</span>' : '';
+        h += '<div class="wrong-item">'+
+          '<div class="wi-t">'+esc(q.id)+' · '+esc(String(cur.stem).split('\n')[0].slice(0,44))+'…</div>'+
+          '<div class="wi-m">'+
+            '<span class="tag type">'+typeLabel(cur.type)+'</span>'+
+            '<span class="tag '+diffClass(cur.difficulty)+'">'+cur.difficulty+'</span>'+
+            '<span class="tag k">'+esc(cur.knowledge)+'</span>'+
+            '<span class="tiny">答案：'+esc(stdAnswerText(cur))+'　分值：'+cur.score+edited+'</span>'+
+            '<button type="button" class="btn sm ghost" data-action="editAnswer" data-v="'+esc(q.id)+'">改答案</button>'+
+            '<button type="button" class="btn sm ghost" data-action="editScore" data-v="'+esc(q.id)+'">改分值</button>'+
+            (state.bankEdits[q.id] ? '<button type="button" class="btn sm pink" data-action="resetQ" data-v="'+esc(q.id)+'">还原</button>' : '')+
+          '</div>'+
+        '</div>';
+      });
+    });
+    h += '</div></div>';
+  }
+
+  else if(ui.teacherTab === 'answer'){
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>修改标准答案</div>'+
+      '<div class="muted">选择题目后修改标准答案。选择题填写选项字母（如 B 或 A、B、D）；判断题填写 正确/错误；数值题填写数值（单位可留空沿用原题）。</div>'+
+      '<div style="height:10px"></div>'+
+      '<label class="lb">选择题目</label>'+
+      '<select class="input" id="editQSel">'+
+        QUESTIONS.map(function(q){
+          var cur = getQ(q.id);
+          return '<option value="'+esc(q.id)+'">'+esc(q.id)+' · '+typeLabel(cur.type)+' · '+esc(String(cur.stem).split('\n')[0].slice(0,26))+'</option>';
+        }).join('')+
+      '</select>'+
+      '<div style="height:10px"></div>'+
+      '<label class="lb">新的标准答案</label>'+
+      '<input class="input" id="editAnsInput" type="text" placeholder="例如：B 或 正确 或 6">'+
+      '<div style="height:10px"></div>'+
+      '<label class="lb">新的单位（数值题可填，其他题留空）</label>'+
+      '<input class="input" id="editUnitInput" type="text" placeholder="例如：V / A / Ω / J">'+
+      '<div style="height:12px"></div>'+
+      '<button type="button" class="btn primary" data-action="saveAnswerEdit">💾 保存修改</button>'+
+    '</div>';
+  }
+
+  else if(ui.teacherTab === 'config'){
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>关卡与分值设置</div>'+
+      '<div class="muted">可整体调整各难度题目的分值倍数（1.0 表示按原分值）。</div>'+
+      '<div style="height:10px"></div>'+
+      '<label class="lb">简单题分值</label><input class="input" id="cfgEasy" type="number" min="1" max="50" value="'+(state.cfgEasy||5)+'">'+
+      '<div style="height:8px"></div>'+
+      '<label class="lb">中等题分值</label><input class="input" id="cfgMid" type="number" min="1" max="50" value="'+(state.cfgMid||10)+'">'+
+      '<div style="height:8px"></div>'+
+      '<label class="lb">困难题分值</label><input class="input" id="cfgHard" type="number" min="1" max="50" value="'+(state.cfgHard||15)+'">'+
+      '<div style="height:12px"></div>'+
+      '<button type="button" class="btn primary" data-action="saveCfg">💾 保存设置</button>'+
+      '<div class="tiny" style="margin-top:8px">提示：修改后新开的答题局才会使用新分值。</div>'+
+    '</div>';
+
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>题库导入 / 导出</div>'+
+      '<div class="btn-row">'+
+        '<button type="button" class="btn sm" data-action="exportBank">⬇️ 导出题库（JSON）</button>'+
+        '<button type="button" class="btn sm" data-action="importBank">⬆️ 导入题库（JSON）</button>'+
+        '<button type="button" class="btn sm pink" data-action="resetBank">↩️ 还原题库修改</button>'+
+      '</div>'+
+      '<div class="tiny" style="margin-top:8px">题库 JSON 格式：数组，每个元素包含 id / level / type / kind / knowledge / difficulty / score / stem / options / answer 等字段。</div>'+
+    '</div>';
+  }
+
+  else if(ui.teacherTab === 'class'){
+    var list = getLeaderboard('total');
+    var totalAnswered = state.answered;
+    var totalCorrect = state.correct;
+    var clsAvg = totalAnswered ? Math.round(totalCorrect/totalAnswered*100) : 0;
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>班级数据概览</div>'+
+      '<table class="tbl">'+
+        '<tr><td>当前班级</td><td class="hl">'+esc(state.profile.className||'—')+'</td></tr>'+
+        '<tr><td>班级人数（含模拟数据）</td><td>'+list.filter(function(p){return p.className===state.profile.className;}).length+' 人</td></tr>'+
+        '<tr><td>本人累计作答</td><td>'+totalAnswered+' 题</td></tr>'+
+        '<tr><td>本人正确率</td><td class="hl">'+clsAvg+'%</td></tr>'+
+        '<tr><td>本人总积分</td><td class="hl">'+state.totalScore+' 分</td></tr>'+
+      '</table></div>';
+
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>班级成绩明细</div>'+
+      '<div style="overflow:auto"><table class="tbl">'+
+        '<tr><th>排名</th><th>昵称</th><th>班级</th><th>总积分</th><th>正确率</th><th>最高连击</th><th>用时(秒)</th></tr>';
+    list.forEach(function(p, i){
+      h += '<tr><td>'+(i+1)+'</td><td>'+esc(p.avatar||'')+' '+esc(p.nickname)+'</td><td>'+esc(p.className||'')+'</td>'+
+           '<td class="hl">'+(p.score||0)+'</td><td>'+Math.round(accuracyOf(p)*100)+'%</td>'+
+           '<td>'+(p.maxCombo||0)+'</td><td>'+Math.round((p.timeMs||0)/1000)+'</td></tr>';
+    });
+    h += '</table></div></div>';
+
+    h += '<div class="card"><div class="btn-row">'+
+      '<button type="button" class="btn sm" data-action="exportData">⬇️ 导出全部成绩</button>'+
+      '<button type="button" class="btn sm" data-action="exportCSV">⬇️ 导出 CSV 表格</button>'+
+      '<button type="button" class="btn sm pink" data-action="resetRank">🗑️ 重置排行榜</button>'+
+    '</div></div>';
+  }
+
+  else if(ui.teacherTab === 'feedback'){
+    var fb = state.feedback || [];
+    h += '<div class="card"><div class="card-title"><span class="dot"></span>答案有误反馈（'+fb.length+' 条）</div>';
+    if(!fb.length){
+      h += '<div class="muted">目前没有收到反馈。学生可在答题页点击"答案有误"提交反馈。</div>';
+    } else {
+      fb.slice().reverse().forEach(function(f, i){
+        h += '<div class="fb-item">'+
+          '<div style="color:#fde047;font-weight:700">#'+(fb.length-i)+' · '+esc(f.qid)+'　<span class="tiny">'+esc(f.time)+'</span></div>'+
+          '<div style="margin-top:4px;color:#cbd5e1">'+esc(f.text)+'</div>'+
+          (f.nick ? '<div class="tiny">反馈人：'+esc(f.nick)+'</div>' : '')+
+        '</div>';
+      });
+      h += '<button type="button" class="btn sm pink" data-action="clearFeedback">🗑️ 清空反馈</button>';
+    }
+    h += '</div>';
+  }
+
+  h += '<button type="button" class="btn ghost full" data-action="go" data-v="home">← 返回首页</button>';
+  return h;
+}
+
+/* ---------- 22. 弹窗 ---------- */
+function openModal(html){
+  var root = $('#modalRoot');
+  if(!root) return;
+  root.innerHTML = '<div class="modal-mask" data-action="closeModalMask"><div class="modal">'+html+'</div></div>';
+}
+function closeModal(){
+  var root = $('#modalRoot');
+  if(root) root.innerHTML = '';
+}
+
+function openFeedbackModal(){
+  if(!quiz) { toast('请先进入答题再反馈'); return; }
+  var q = quiz.qs[quiz.idx];
+  if(!q) return;
+  openModal(
+    '<h3>📣 反馈"答案有误"</h3>'+
+    '<div class="tiny" style="margin-bottom:10px">题目ID：'+esc(q.id)+'　题型：'+esc(typeLabel(q.type))+'</div>'+
+    '<label class="lb">请描述你发现的问题</label>'+
+    '<textarea class="input" id="fbText" placeholder="例如：标准答案应该是B，因为……"></textarea>'+
+    '<div style="height:12px"></div>'+
+    '<div class="btn-row">'+
+      '<button type="button" class="btn primary" data-action="submitFeedback">提交反馈</button>'+
+      '<button type="button" class="btn ghost" data-action="closeModal">取消</button>'+
+    '</div>'
+  );
+}
+function submitFeedback(){
+  var el = $('#fbText');
+  var txt = el ? el.value.trim() : '';
+  if(!txt){ toast('请先填写反馈内容'); return; }
+  if(!quiz) return;
+  var q = quiz.qs[quiz.idx];
+  var now = new Date();
+  state.feedback.push({
+    qid: q.id,
+    text: txt,
+    nick: state.profile.nickname || '匿名',
+    time: now.getFullYear()+'-'+pad2(now.getMonth()+1)+'-'+pad2(now.getDate())+' '+pad2(now.getHours())+':'+pad2(now.getMinutes()),
+    standard: stdAnswerText(q)
+  });
+  saveState();
+  closeModal();
+  toast('反馈已提交，教师可在后台查看');
+}
+
+function openEditAnswerModal(qid){
+  var q = getQ(qid);
+  if(!q) return;
+  var cur = stdAnswerText(q);
+  var rawAnswer = (q.kind === 'multi') ? q.answer.join('、') :
+                  (q.kind === 'judge') ? (q.answer ? '正确' : '错误') :
+                  (q.answerNum !== undefined) ? String(q.answerNum) : String(q.answer);
+  openModal(
+    '<h3>修改标准答案</h3>'+
+    '<div class="tiny" style="margin-bottom:8px">'+esc(qid)+' · '+typeLabel(q.type)+'<br>当前标准答案：<b style="color:#fde047">'+esc(cur)+'</b></div>'+
+    '<label class="lb">新标准答案</label>'+
+    '<input class="input" id="eaInput" type="text" value="'+esc(rawAnswer)+'">'+
+    (q.answerNum !== undefined
+      ? '<div style="height:8px"></div><label class="lb">单位</label><input class="input" id="eaUnit" type="text" value="'+esc(q.unit||'')+'">'
+      : '')+
+    '<div class="tiny" style="margin-top:8px">选择题填字母（多选用顿号分隔，如 A、B、D）；判断题填 正确 或 错误。</div>'+
+    '<div style="height:12px"></div>'+
+    '<div class="btn-row"><button type="button" class="btn primary" data-action="doSaveAnswer" data-v="'+esc(qid)+'">保存</button>'+
+    '<button type="button" class="btn ghost" data-action="closeModal">取消</button></div>'
+  );
+}
+function doSaveAnswer(qid){
+  var q = getQ(qid);
+  if(!q) return;
+  var v = ($('#eaInput') ? $('#eaInput').value.trim() : '');
+  if(!v){ toast('请填写答案'); return; }
+  var edit = state.bankEdits[qid] || {};
+
+  if(q.kind === 'choice'){
+    var key = v.toUpperCase().replace(/[^A-Z]/g,'');
+    if(!key){ toast('选择题答案应为 A/B/C/D'); return; }
+    edit.answer = key.charAt(0);
+  } else if(q.kind === 'multi'){
+    var keys = v.toUpperCase().replace(/[^A-Z]/g,'').split('').sort();
+    var uniq = [];
+    keys.forEach(function(k){ if(uniq.indexOf(k)<0) uniq.push(k); });
+    if(!uniq.length){ toast('多选题答案应包含选项字母'); return; }
+    edit.answer = uniq;
+  } else if(q.kind === 'judge'){
+    edit.answer = (v.indexOf('正确') >= 0 || v === '√' || v.toUpperCase() === 'T');
+  } else {
+    var num = parseFloat(v.replace(/[^\d.\-+eE]/g,''));
+    if(!isFinite(num)){ toast('数值题答案应为数字'); return; }
+    edit.answerNum = num;
+    var uEl = $('#eaUnit');
+    if(uEl && uEl.value.trim()) edit.unit = uEl.value.trim();
+  }
+
+  state.bankEdits[qid] = edit;
+  saveState();
+  closeModal();
+  toast('标准答案已更新');
+  renderView();
+}
+
+function openEditScoreModal(qid){
+  var q = getQ(qid);
+  if(!q) return;
+  openModal(
+    '<h3>调整分值</h3>'+
+    '<div class="tiny" style="margin-bottom:8px">'+esc(qid)+' · '+typeLabel(q.type)+'</div>'+
+    '<label class="lb">分值（1—50）</label>'+
+    '<input class="input" id="esInput" type="number" min="1" max="50" value="'+q.score+'">'+
+    '<div style="height:12px"></div>'+
+    '<div class="btn-row"><button type="button" class="btn primary" data-action="doSaveScore" data-v="'+esc(qid)+'">保存</button>'+
+    '<button type="button" class="btn ghost" data-action="closeModal">取消</button></div>'
+  );
+}
+function doSaveScore(qid){
+  var el = $('#esInput');
+  var v = el ? parseInt(el.value, 10) : NaN;
+  if(!isFinite(v) || v < 1 || v > 50){ toast('请输入 1—50 之间的整数'); return; }
+  var edit = state.bankEdits[qid] || {};
+  edit.score = v;
+  state.bankEdits[qid] = edit;
+  saveState();
+  closeModal();
+  toast('分值已更新');
+  renderView();
+}
+
+function openImportModal(kind){
+  var isBank = (kind === 'bank');
+  openModal(
+    '<h3>'+(isBank ? '导入题库' : '导入成绩 / 存档')+'</h3>'+
+    '<div class="tiny" style="margin-bottom:10px">'+
+      (isBank
+        ? '粘贴题库 JSON 数组，或选择 JSON 文件。字段示例：id, level, type, kind, knowledge, difficulty, score, stem, options, answer。'
+        : '粘贴导出的存档 JSON，或选择 JSON 文件，用于恢复积分 / 徽章 / 错题 / 成绩。')+
+    '</div>'+
+    '<textarea class="input" id="impText" placeholder="在此粘贴 JSON…" style="min-height:120px"></textarea>'+
+    '<div style="height:10px"></div>'+
+    '<label class="lb">或选择文件</label>'+
+    '<input class="input" id="impFile" type="file" accept=".json,application/json">'+
+    '<div style="height:12px"></div>'+
+    '<div class="btn-row">'+
+      '<button type="button" class="btn primary" data-action="doImport" data-v="'+(isBank?'bank':'save')+'">导入</button>'+
+      '<button type="button" class="btn ghost" data-action="closeModal">取消</button>'+
+    '</div>'
+  );
+}
+function doImport(kind){
+  var txt = '';
+  var ta = $('#impText');
+  if(ta && ta.value.trim()) txt = ta.value.trim();
+  var fileEl = $('#impFile');
+
+  function apply(text){
+    var data;
+    try{ data = JSON.parse(text); }
+    catch(e){ toast('JSON 格式错误，请检查'); return; }
+
+    if(kind === 'bank'){
+      if(!Array.isArray(data)){ toast('题库应为 JSON 数组'); return; }
+      var addCount = 0, updateCount = 0;
+      data.forEach(function(item){
+        if(!item || !item.id) return;
+        var idx = -1, i;
+        for(i=0;i<QUESTIONS.length;i++){ if(QUESTIONS[i].id === item.id){ idx = i; break; } }
+        if(idx >= 0){
+          QUESTIONS[idx] = Object.assign({}, QUESTIONS[idx], item);
+          updateCount++;
+        }else{
+          if(!item.level) item.level = 'l1';
+          if(!item.type) item.type = 'single';
+          if(!item.kind) item.kind = 'choice';
+          if(!item.score) item.score = 5;
+          if(!item.difficulty) item.difficulty = '简单';
+          if(!item.knowledge) item.knowledge = '未分类';
+          if(!item.explain) item.explain = '（导入题目，暂无解析）';
+          if(!item.formula) item.formula = '';
+          if(!item.pitfall) item.pitfall = '';
+          QUESTIONS.push(item);
+          addCount++;
+        }
+      });
+      saveState();
+      toast('题库导入完成：新增 '+addCount+' 题，更新 '+updateCount+' 题');
+      closeModal();
+      renderView();
+    }else{
+      if(!data || typeof data !== 'object'){ toast('存档格式错误'); return; }
+      if(data.profile || data.totalScore !== undefined || data.badges){
+        state = Object.assign(defaultState(), data);
+        state.profile  = Object.assign(defaultState().profile,  data.profile || {});
+        state.settings = Object.assign({sound:true}, data.settings || {});
+        saveState();
+        toast('存档导入成功');
+        closeModal();
+        ui.screen = 'home';
+        render();
+      }else if(Array.isArray(data)){
+        // 当作成绩列表导入
+        state.imported = (state.imported || []).concat(data);
+        saveState();
+        toast('已导入 '+data.length+' 条成绩记录');
+        closeModal();
+        renderView();
+      }else{
+        toast('无法识别的存档格式');
+      }
+    }
+  }
+
+  if(fileEl && fileEl.files && fileEl.files[0]){
+    var reader = new FileReader();
+    reader.onload = function(){ apply(String(reader.result)); };
+    reader.onerror = function(){ toast('文件读取失败'); };
+    reader.readAsText(fileEl.files[0], 'utf-8');
+  }else if(txt){
+    apply(txt);
+  }else{
+    toast('请粘贴 JSON 或选择文件');
+  }
+}
+
+/* ---------- 23. 导入导出 ---------- */
+function download(filename, content, mime){
+  try{
+    var blob = new Blob([content], { type: mime || 'application/json;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){
+      try{ document.body.removeChild(a); }catch(e){}
+      URL.revokeObjectURL(url);
+    }, 300);
+    toast('已开始下载：' + filename);
+  }catch(e){
+    console.warn(e);
+    toast('下载失败，请尝试复制数据手动保存');
+  }
+}
+function exportData(){
+  var data = {
+    exportedAt: new Date().toISOString(),
+    profile: state.profile,
+    totalScore: state.totalScore,
+    weekBaseline: state.weekBaseline,
+    weekKey: state.weekKey,
+    correct: state.correct,
+    answered: state.answered,
+    maxCombo: state.maxCombo,
+    totalTimeMs: state.totalTimeMs,
+    badges: state.badges,
+    wrongBook: state.wrongBook,
+    qLog: state.qLog,
+    firstCorrect: state.firstCorrect,
+    typeStats: state.typeStats,
+    knowledgeStats: state.knowledgeStats,
+    levelBest: state.levelBest,
+    streakDays: state.streakDays,
+    lastLogin: state.lastLogin,
+    settings: state.settings,
+    bankEdits: state.bankEdits,
+    imported: state.imported,
+    _faultStreak: state._faultStreak || 0
+  };
+  var name = '电路侦探社_成绩_' + dateKey(new Date()) + '.json';
+  download(name, JSON.stringify(data, null, 2));
+}
+function exportCSV(){
+  var list = getLeaderboard(ui.leaderboardTab || 'total');
+  var rows = [['排名','昵称','班级','年级','总积分','本周积分','正确率(%)','最高连击','答题用时(秒)','徽章数']];
+  list.forEach(function(p, i){
+    rows.push([
+      i+1,
+      p.nickname || '',
+      p.className || '',
+      p.grade || '',
+      p.score || 0,
+      p.weekScore || 0,
+      Math.round(accuracyOf(p)*100),
+      p.maxCombo || 0,
+      Math.round((p.timeMs||0)/1000),
+      p.isMe ? Object.keys(state.badges||{}).length : (p.badges||0)
+    ]);
+  });
+  var csv = '\ufeff' + rows.map(function(r){
+    return r.map(function(c){
+      var s = String(c === null || c === undefined ? '' : c);
+      if(s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0){
+        return '"' + s.replace(/"/g,'""') + '"';
+      }
+      return s;
+    }).join(',');
+  }).join('\r\n');
+  download('电路侦探社_成绩_' + dateKey(new Date()) + '.csv', csv, 'text/csv;charset=utf-8');
+}
+
+function resetRank(){
+  openModal(
+    '<h3>⚠️ 重置排行榜</h3>'+
+    '<div class="muted">将清空当前玩家的积分、正确率、最高连击等排行榜数据（徽章、错题本、题目修改保留）。此操作不可撤销。</div>'+
+    '<div style="height:14px"></div>'+
+    '<div class="btn-row">'+
+      '<button type="button" class="btn pink" data-action="doResetRank">确认重置</button>'+
+      '<button type="button" class="btn ghost" data-action="closeModal">取消</button>'+
+    '</div>'
+  );
+}
+function doResetRank(){
+  state.totalScore = 0;
+  state.weekBaseline = 0;
+  state.weekKey = getWeekKey(new Date());
+  state.correct = 0;
+  state.answered = 0;
+  state.maxCombo = 0;
+  state.totalTimeMs = 0;
+  state.levelBest = {};
+  state.imported = [];
+  saveState();
+  closeModal();
+  toast('排行榜已重置');
+  renderView();
+}
+
+function resetAll(){
+  openModal(
+    '<h3>⚠️ 清空所有数据</h3>'+
+    '<div class="muted">将删除昵称、积分、徽章、错题本、题目修改等全部本地数据，恢复到初始状态。此操作不可撤销。</div>'+
+    '<div style="height:14px"></div>'+
+    '<div class="btn-row">'+
+      '<button type="button" class="btn pink" data-action="doResetAll">确认清空</button>'+
+      '<button type="button" class="btn ghost" data-action="closeModal">取消</button>'+
+    '</div>'
+  );
+}
+function doResetAll(){
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  state = defaultState();
+  saveState();
+  closeModal();
+  ui.screen = 'home';
+  quiz = null;
+  render();
+  toast('所有数据已清空');
+}
+
+function resetBank(){
+  state.bankEdits = {};
+  saveState();
+  toast('题库修改已还原');
+  renderView();
+}
+
+function exportBank(){
+  var data = QUESTIONS.map(function(q){ return getQ(q.id); });
+  download('电路侦探社_题库_' + dateKey(new Date()) + '.json', JSON.stringify(data, null, 2));
+}
+
+/* ---------- 24. 事件委托（保证动态生成的元素也可点击） ---------- */
+document.addEventListener('click', function(ev){
+  var t = ev.target;
+  if(!t || !t.closest) return;
+
+  /* 弹窗遮罩关闭 */
+  var mask = t.closest('.modal-mask');
+  if(mask && t === mask){
+    closeModal();
+    return;
+  }
+
+  var el = t.closest('[data-action]');
+  if(!el) return;
+  var action = el.getAttribute('data-action');
+  var val = el.getAttribute('data-v');
+  if(!action) return;
+
+  // 阻止表单默认行为（如未来加入 form）
+  if(el.tagName === 'BUTTON'){ /* type=button 已保证不提交 */ }
+
+  switch(action){
+    case 'go':
+      sfxClick();
+      stopTimer();
+      if(ui.screen === 'quiz' && val !== 'quiz'){ quizToken++; quiz = null; }
+      ui.screen = val || 'home';
+      render();
+      window.scrollTo(0,0);
+      break;
+
+    case 'pickAvatar':
+      state.profile.avatar = val;
+      saveState();
+      renderView();
+      break;
+
+    case 'saveProfile':
+      var ni = $('#nickInput');
+      var cs = $('#classSel');
+      var gs = $('#gradeSel');
+      if(ni) state.profile.nickname = (ni.value || '').trim().slice(0,12);
+      if(!state.profile.nickname){ toast('请先给自己起个昵称'); return; }
+      if(cs) state.profile.className = cs.value;
+      if(gs) state.profile.grade = gs.value;
+      saveState();
+      toast('档案已保存，侦探 ' + state.profile.nickname + '，出发！');
+      ui.screen = 'levels';
+      render();
+      window.scrollTo(0,0);
+      break;
+
+    case 'openLevel':
+      ui.curLevel = val;
+      ui.curLevelLv = LEVELS.filter(function(x){return x.id===val;})[0];
+      ui.screen = 'levelDetail';
+      render();
+      window.scrollTo(0,0);
+      break;
+
+    case 'startLevel':
+      startQuiz('level', { levelId: val });
+      break;
+
+    case 'startTimed':
+      startQuiz('timed');
+      break;
+
+    case 'startWrong':
+      startQuiz('wrong');
+      break;
+
+    case 'startFault':
+      startQuiz('fault');
+      break;
+
+    case 'pickOpt':
+      pickOption(val);
+      break;
+
+    case 'submitQ':
+      submitAnswer();
+      break;
+
+    case 'nextQ':
+      nextQuestion();
+      break;
+
+    case 'useHint':
+      if(!quiz || quiz.submitted) return;
+      quiz.usedHint = true;
+      var qq = quiz.qs[quiz.idx];
+      var hint = '';
+      if(qq.kind === 'choice' || qq.kind === 'multi'){
+        hint = '提示：正确答案涉及的关键词 —— ' + (qq.formula || qq.knowledge);
+      }else if(qq.kind === 'judge'){
+        hint = '提示：判断依据 —— ' + (qq.formula || qq.knowledge);
+      }else{
+        hint = '提示：本题适用公式 —— ' + (qq.formula || '见解析');
+      }
+      toast(hint);
+      renderView();
+      break;
+
+    case 'quitQuiz':
+      openModal('<h3>退出答题？</h3><div class="muted">本局进度不会保存，确定退出吗？</div><div style="height:14px"></div>'+
+        '<div class="btn-row"><button type="button" class="btn pink" data-action="doQuit">确认退出</button>'+
+        '<button type="button" class="btn ghost" data-action="closeModal">继续答题</button></div>');
+      break;
+
+    case 'doQuit':
+      closeModal();
+      quitQuiz();
+      break;
+
+    case 'goFeedback':
+      openFeedbackModal();
+      break;
+
+    case 'submitFeedback':
+      submitFeedback();
+      break;
+
+    case 'closeModal':
+      closeModal();
+      break;
+
+    case 'closeModalMask':
+      closeModal();
+      break;
+
+    case 'lbTab':
+      ui.leaderboardTab = val;
+      renderView();
+      break;
+
+    case 'tTab':
+      ui.teacherTab = val;
+      renderView();
+      break;
+
+    case 'toggleSound':
+      state.settings.sound = !state.settings.sound;
+      saveState();
+      if(state.settings.sound) sfxClick();
+      renderView();
+      toast(state.settings.sound ? '音效已开启' : '音效已关闭');
+      break;
+
+    case 'viewAnswer':
+      var box = document.getElementById('ans_' + val);
+      if(box) box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+      break;
+
+    case 'exportData':
+      exportData();
+      break;
+
+    case 'exportCSV':
+      exportCSV();
+      break;
+
+    case 'importData':
+      openImportModal('save');
+      break;
+
+    case 'importBank':
+      openImportModal('bank');
+      break;
+
+    case 'exportBank':
+      exportBank();
+      break;
+
+    case 'doImport':
+      doImport(val);
+      break;
+
+    case 'resetRank':
+      resetRank();
+      break;
+
+    case 'doResetRank':
+      doResetRank();
+      break;
+
+    case 'resetAll':
+      resetAll();
+      break;
+
+    case 'doResetAll':
+      doResetAll();
+      break;
+
+    case 'resetBank':
+      resetBank();
+      break;
+
+    case 'editAnswer':
+      openEditAnswerModal(val);
+      break;
+
+    case 'doSaveAnswer':
+      doSaveAnswer(val);
+      break;
+
+    case 'editScore':
+      openEditScoreModal(val);
+      break;
+
+    case 'doSaveScore':
+      doSaveScore(val);
+      break;
+
+    case 'resetQ':
+      delete state.bankEdits[val];
+      saveState();
+      toast('已还原该题');
+      renderView();
+      break;
+
+    case 'saveAnswerEdit':
+      (function(){
+        var sel = $('#editQSel');
+        if(!sel) return;
+        openEditAnswerModal(sel.value);
+      })();
+      break;
+
+    case 'saveCfg':
+      (function(){
+        var a = parseInt(($('#cfgEasy')||{}).value, 10);
+        var b = parseInt(($('#cfgMid')||{}).value, 10);
+        var c = parseInt(($('#cfgHard')||{}).value, 10);
+        if(!isFinite(a) || !isFinite(b) || !isFinite(c)){ toast('请填写有效数字'); return; }
+        state.cfgEasy = clamp(a,1,50);
+        state.cfgMid  = clamp(b,1,50);
+        state.cfgHard = clamp(c,1,50);
+        // 应用分值（仅影响之后的新局）
+        QUESTIONS.forEach(function(q){
+          q.score = (q.difficulty === '简单') ? state.cfgEasy :
+                    (q.difficulty === '中等') ? state.cfgMid : state.cfgHard;
+        });
+        saveState();
+        toast('分值设置已保存');
+        renderView();
+      })();
+      break;
+
+    case 'clearFeedback':
+      state.feedback = [];
+      saveState();
+      toast('反馈已清空');
+      renderView();
+      break;
+  }
+}, false);
+
+/* ---------- 25. 输入事件（不重渲染，保留焦点） ---------- */
+document.addEventListener('input', function(ev){
+  var t = ev.target;
+  if(!t || !t.id) return;
+  if(!quiz) return;
+  if(t.id === 'textInput'){ quiz.textAnswer = t.value; }
+  else if(t.id === 'calcInput'){ quiz.calcValue = t.value; }
+  else if(t.id === 'calcUnit'){ quiz.calcUnit = t.value; }
+}, false);
+
+document.addEventListener('change', function(ev){
+  var t = ev.target;
+  if(!t || !t.id) return;
+  if(!quiz) return;
+  if(t.id === 'calcUnit'){ quiz.calcUnit = t.value; }
+}, false);
+
+/* 键盘：回车提交 */
+document.addEventListener('keydown', function(ev){
+  if(ev.key !== 'Enter') return;
+  var t = ev.target;
+  if(!t) return;
+  if(t.tagName === 'TEXTAREA') return;
+  if(t.id === 'textInput' || t.id === 'calcInput'){
+    ev.preventDefault();
+    submitAnswer();
+  }else if(t.id === 'nickInput'){
+    ev.preventDefault();
+    var btn = document.querySelector('[data-action="saveProfile"]');
+    if(btn) btn.click();
+  }
+}, false);
+
+/* ---------- 26. 启动 ---------- */
+function boot(){
+  loadState();
+
+  // 首次访问：给出默认昵称
+  if(!state.profile.nickname) state.profile.nickname = '';
+
+  var gotDaily = checkDailyLogin();
+  if(gotDaily){ saveState(); }
+
+  render();
+
+  if(gotDaily){
+    setTimeout(function(){ toast('每日首次登录 +5 分，连续登录第 ' + state.streakDays + ' 天'); }, 700);
+  }
+  setTimeout(function(){ checkBadges(); }, 1400);
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', boot, false);
+}else{
+  boot();
+}
+
+/* 全局兜底：避免未捕获异常造成白屏（同时打印到控制台便于排查） */
+window.addEventListener('error', function(e){
+  console.warn('[电路侦探社] 运行提示：', e && e.message ? e.message : e);
+}, false);
+</script>
+</body>
+</html>
